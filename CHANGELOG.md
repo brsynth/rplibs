@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.0](https://github.com/brsynth/rplibs/tree/1.0.0) (2022-04-28)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/0.0.1...1.0.0)
+
 ## [0.0.1](https://github.com/brsynth/rplibs/tree/0.0.1) (2022-04-28)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/f559fa7739f0131f9ea8504197af5c060c50114d...0.0.1)
