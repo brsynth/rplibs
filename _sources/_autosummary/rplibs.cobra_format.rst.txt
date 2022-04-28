@@ -1,0 +1,36 @@
+rplibs.cobra\_format
+====================
+
+.. automodule:: rplibs.cobra_format
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      cobra_suffix
+      cobraize
+      to_cobra
+      uncobraize
+      uncobraize_results
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+

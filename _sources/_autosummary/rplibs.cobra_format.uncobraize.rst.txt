@@ -1,0 +1,6 @@
+rplibs.cobra\_format.uncobraize
+===============================
+
+.. currentmodule:: rplibs.cobra_format
+
+.. autofunction:: uncobraize

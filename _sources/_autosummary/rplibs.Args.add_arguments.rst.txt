@@ -1,0 +1,6 @@
+rplibs.Args.add\_arguments
+==========================
+
+.. currentmodule:: rplibs.Args
+
+.. autofunction:: add_arguments

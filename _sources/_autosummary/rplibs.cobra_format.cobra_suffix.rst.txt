@@ -1,0 +1,6 @@
+rplibs.cobra\_format.cobra\_suffix
+==================================
+
+.. currentmodule:: rplibs.cobra_format
+
+.. autofunction:: cobra_suffix
