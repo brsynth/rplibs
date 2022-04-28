@@ -1,0 +1,14 @@
+name: rplibs
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - cobra
+  - python-libsbml
+  - numpy
+  - pandas
+  - networkx >=2.5
+  - filetype
+  - brs_utils
+  - chemlite
+  - rr_cache
