@@ -8,9 +8,9 @@ from os import path as os_path
 
 
 ## INFOS ##
-package     = 'rpextractsink'
-descr       = 'RetroPath2 sink generator'
-url         = 'https://github.com/brsynth/rpExtractSink'
+package     = 'rplibs'
+descr       = 'Libraries for rpTools'
+url         = 'https://github.com/brsynth/rplibs'
 authors     = 'Joan Hérisson, Melchior du Lac, Thomas Duigou'
 corr_author = 'joan.herisson@univ-evry.fr'
 
