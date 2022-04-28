@@ -36,8 +36,8 @@ python -m rplibs.stats --pathways <Pathway_1> <Pathway_2>
 
 ## Authors
 
-* **Melchior du Lac**
 * **Joan Hérisson**
+* **Melchior du Lac**
 
 ## Acknowledgments
 
