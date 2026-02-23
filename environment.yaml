@@ -3,8 +3,6 @@ channels:
   - conda-forge
 dependencies:
   - python
-  - cobra
-  - python-libsbml
   - numpy
   - pandas
   - networkx >=2.5
@@ -12,3 +10,6 @@ dependencies:
   - brs_utils
   - chemlite
   - rr_cache
+  - swiglpk
+  - pip:
+      - cobra
