@@ -3,6 +3,8 @@ name: Python Code Quality
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**.py'
   pull_request:
     branches: [ main ]
 
