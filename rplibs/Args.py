@@ -1,4 +1,3 @@
-from os import path as os_path
 from argparse  import ArgumentParser
 from rplibs._version import __version__
 from brs_utils import add_logger_args
@@ -7,8 +6,7 @@ from brs_utils import add_logger_args
 def build_args_parser(
     prog: str,
     description: str = '',
-    epilog: str = '',
-    m_add_args: Callable = None,
+    epilog: str = ''
 ) -> ArgumentParser:
 
     parser = ArgumentParser(

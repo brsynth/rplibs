@@ -4,10 +4,7 @@ Created on June 17 2020
 @author: Joan Hérisson
 """
 
-from unittest       import TestCase
 from rplibs import rpSBML, rpGraph
-from os             import path as os_path
-from pathlib        import Path
 from main_rplibs import Main_rplibs
 
 

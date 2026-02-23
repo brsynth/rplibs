@@ -27,22 +27,17 @@ from typing import (
     Dict,
     List,
     Set,
-    Union,
-    TypeVar
+    Union
 )
 from logging import (
     Logger,
-    getLogger,
-    ERROR
+    getLogger
 )
 from copy import deepcopy
-from brs_utils import Cache
 from chemlite import (
-    Pathway,
-    Compound
+    Pathway
 )
 from rr_cache import rrCache
-from numpy import isin
 from rplibs.rpSBML import rpSBML
 from rplibs.rpReaction import (
     rpReaction,

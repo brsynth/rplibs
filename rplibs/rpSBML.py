@@ -146,9 +146,9 @@ class rpSBML:
             if rpsbml is None:
                 self.document = None
             else:
-                self.logger.debug(f'Cloning SBMLDocument...')
+                self.logger.debug('Cloning SBMLDocument...')
                 self.document = rpsbml.getDocument().clone()
-                self.logger.debug(f'SBMLDocument CLONED')
+                self.logger.debug('SBMLDocument CLONED')
 
         if rpsbml is not None and not self.checkSBML():
             self.logger.error('SBML document not valid')
@@ -687,63 +687,63 @@ class rpSBML:
             return None, None, None, None
 
 
-    def check_SBML_compartment(self, compartment_id: str) -> Tuple[str, str]:
-        # Check model compartment ID
-        # Set new compartment ID in case it exists under another ID
-        compartment = self.has_compartment(compartment_id)
-        if compartment is not None:
-            self.logger.debug(
-                f"Compartment '{compartment_id}' found in the model '{self.getName()}' as {compartment.getId()}"
-            )
-            if compartment_id != compartment.getId():
-                self.logger.warning(
-                    f"Compartment '{compartment_id}' has been replaced by {compartment.getId()}"
-                )
-            return compartment.getId()
-        else:
-            self.logger.error(
-                f"Compartment '{compartment_id}' not found in the model '{self.getName()}'"
-            )
-            self.logger.error(
-                "Available compartments: {comp_ids}".format(
-                    comp_ids=", ".join(
-                        [
-                            comp.getId()
-                            for comp in list(self.getModel().getListOfCompartments())
-                        ]
-                    )
-                )
-            )
-            return None
+    # def check_SBML_compartment(self, compartment_id: str) -> Tuple[str, str]:
+    #     # Check model compartment ID
+    #     # Set new compartment ID in case it exists under another ID
+    #     compartment = self.has_compartment(compartment_id)
+    #     if compartment is not None:
+    #         self.logger.debug(
+    #             f"Compartment '{compartment_id}' found in the model '{self.getName()}' as {compartment.getId()}"
+    #         )
+    #         if compartment_id != compartment.getId():
+    #             self.logger.warning(
+    #                 f"Compartment '{compartment_id}' has been replaced by {compartment.getId()}"
+    #             )
+    #         return compartment.getId()
+    #     else:
+    #         self.logger.error(
+    #             f"Compartment '{compartment_id}' not found in the model '{self.getName()}'"
+    #         )
+    #         self.logger.error(
+    #             "Available compartments: {comp_ids}".format(
+    #                 comp_ids=", ".join(
+    #                     [
+    #                         comp.getId()
+    #                         for comp in list(self.getModel().getListOfCompartments())
+    #                     ]
+    #                 )
+    #             )
+    #         )
+    #         return None
 
 
-    def check_SBML_rxnid(self, rxn_id: str) -> Tuple[str, str]:
-        self.logger.debug(f"rpsbml: {self.getName()}")
-        self.logger.debug(f"rxn_id: {rxn_id}")
+    # def check_SBML_rxnid(self, rxn_id: str) -> Tuple[str, str]:
+    #     self.logger.debug(f"rpsbml: {self.getName()}")
+    #     self.logger.debug(f"rxn_id: {rxn_id}")
 
-        # Check model reaction ID
-        # Get reaction from the rpSBML
-        _rxn = self.getModel().getReaction(rxn_id)
-        if _rxn is None:
-            self.logger.error(
-                f"Reaction ID '{rxn_id}' not found in the model '{self.getName()}'"
-            )
-            possible_rxn_ids = [
-                rxn.getId()
-                for rxn in list(self.getModel().getListOfReactions())
-                if rxn_id in rxn.getId().lower()
-            ]
-            if possible_rxn_ids != []:
-                self.logger.error(
-                    "Possible reactions: {rxn_ids}".format(
-                        rxn_ids=", ".join(possible_rxn_ids)
-                    )
-                )
-            return None
+    #     # Check model reaction ID
+    #     # Get reaction from the rpSBML
+    #     _rxn = self.getModel().getReaction(rxn_id)
+    #     if _rxn is None:
+    #         self.logger.error(
+    #             f"Reaction ID '{rxn_id}' not found in the model '{self.getName()}'"
+    #         )
+    #         possible_rxn_ids = [
+    #             rxn.getId()
+    #             for rxn in list(self.getModel().getListOfReactions())
+    #             if rxn_id in rxn.getId().lower()
+    #         ]
+    #         if possible_rxn_ids != []:
+    #             self.logger.error(
+    #                 "Possible reactions: {rxn_ids}".format(
+    #                     rxn_ids=", ".join(possible_rxn_ids)
+    #                 )
+    #             )
+    #         return None
 
-        self.logger.debug(f"rxn_id found as {rxn_id}")
+    #     self.logger.debug(f"rxn_id found as {rxn_id}")
 
-        return _rxn.getId()
+    #     return _rxn.getId()
 
 
     @staticmethod
@@ -825,7 +825,7 @@ class rpSBML:
 
         for source_unitDef in source_sbml_doc.getModel().getListOfUnitDefinitions():
 
-            if not source_unitDef.getId() in target_unitDefID: # have to compare by ID since no annotation
+            if source_unitDef.getId() not in target_unitDefID: # have to compare by ID since no annotation
                 # create a new unitDef in the target
                 target_unitDef = self.getModel().createUnitDefinition()
                 rpSBML.checklibSBML(
@@ -1035,7 +1035,7 @@ class rpSBML:
 
         for source_geneProduct in source_fbc.getListOfGeneProducts():
 
-            if not source_geneProduct.getId() in targetGenProductID:
+            if source_geneProduct.getId() not in targetGenProductID:
                 target_geneProduct = target_fbc.createGeneProduct()
                 rpSBML.checklibSBML(
                     target_geneProduct, 'creating target gene product')
@@ -1086,7 +1086,7 @@ class rpSBML:
 
         for source_objective in source_fbc.getListOfObjectives():
 
-            if not source_objective.getId() in targetObjectiveID:
+            if source_objective.getId() not in targetObjectiveID:
                 target_objective = target_fbc.createObjective()
                 rpSBML.checklibSBML(
                     target_objective,
@@ -1705,7 +1705,7 @@ class rpSBML:
         self.logger.debug(f'species: {species}')
         self.logger.debug(f'reactions: {reactions}')
 
-        source_groups_ids = [i.id for i in source_groups.getListOfGroups()]
+        #source_groups_ids = [i.id for i in source_groups.getListOfGroups()]
         target_groups_ids = [i.id for i in target_groups.getListOfGroups()]
         # NOTE: only need to update the source species since these are the ones that are replaced with their equivalent
         for source_group in source_groups.getListOfGroups():
@@ -1731,7 +1731,7 @@ class rpSBML:
                         'Setting name to the groups member'
                     )
             # create and add the groups if a source group does not exist in the target
-            if not source_group.id in target_groups_ids:
+            if source_group.id not in target_groups_ids:
                 rpSBML.checklibSBML(
                     target_groups.addGroup(source_group),
                     'copy the source groups to the target groups'
@@ -2439,7 +2439,7 @@ class rpSBML:
         if reaction_compartment is None or reaction_compartment == '':
             reactants = reaction.getListOfReactants()
             if len(reactants) == 1:
-                reactant = reactants[0]
+                #reactant = reactants[0]
                 specie_id = reactants[0].getSpecies()
                 reaction_compartment = self.getModel().getSpecies(specie_id).getCompartment()
         correct_compartment = external_compartment == reaction_compartment
@@ -2567,7 +2567,7 @@ class rpSBML:
                 for ec_s in sim_frac_ec:
                     tmp_score = 0.0
                     for i in range(4):
-                        if not ec_m[i]==None and not ec_s[i]==None:
+                        if ec_m[i] is not None and ec_s[i] is not None:
                             if ec_m[i]==ec_s[i]:
                                 tmp_score += 0.25
                                 if i == 2:
@@ -2949,7 +2949,7 @@ class rpSBML:
             for v in value:
                 annotation += f'''
                                 <brsynth:{v}'''
-                annotation += f'''/>'''
+                annotation += '''/>'''
             annotation += f'''
                             </brsynth:{str(annot_header)}>'''
             return annotation
@@ -2964,7 +2964,7 @@ class rpSBML:
                         annotation += f''' {_k}="{_v}"'''
                 else:
                     annotation += f''' value="{v}"'''
-                annotation += f'''/>'''
+                annotation += '''/>'''
             annotation += f'''
                             </brsynth:{str(annot_header)}>'''
             return annotation
@@ -3434,7 +3434,7 @@ class rpSBML:
 
         self.document = libsbml.readSBMLFromFile(inFile)
         rpSBML.checklibSBML(self.getDocument(), 'reading input file')
-        errors = self.getDocument().getNumErrors()
+        #errors = self.getDocument().getNumErrors()
         # display the errors in the log accordning to the severity
         for err in [self.getDocument().getError(i) for i in range(self.getDocument().getNumErrors())]:
             # TODO if the error is related to packages not enabled (like groups or fbc) activate them
@@ -3499,10 +3499,10 @@ class rpSBML:
             Full path of the stored file
         """
 
-        ext = ''
+        # ext = ''
 
-        if not str(self.getName()).endswith('_sbml'):
-            ext = '_sbml'
+        # if not str(self.getName()).endswith('_sbml'):
+        #     ext = '_sbml'
 
         if filename is not None:
             out_filename = filename
@@ -3566,7 +3566,7 @@ class rpSBML:
         try:
             rpSBML.checklibSBML(group, 'retreiving '+group_id+' group')
             return [m.getIdRef() for m in group.getListOfMembers()]
-        except:
+        except Exception:
             self.logger.debug(f'Group \'{group_id}\' not found')
             return None
         # members = []
@@ -3649,7 +3649,7 @@ class rpSBML:
                 str_annot = bag.getChild(i).getAttrValue(0)
                 toRet.append(str_annot)
             return toRet
-        except:
+        except Exception:
             return []
 
     @staticmethod
@@ -3704,7 +3704,7 @@ class rpSBML:
         def eval_value(value: str) -> TypeVar:
             try:
                 return eval(value)
-            except:
+            except Exception:
                 return str(value)
 
         toRet = {}
@@ -3990,7 +3990,7 @@ class rpSBML:
         :rtype: rpSBML
         """
         # To handle file removing (Windows)
-        cobra_model = None
+        #cobra_model = None
         with NamedTemporaryFile(delete=False) as temp_f:
             cobra.io.write_sbml_model(
                 model,
@@ -4833,7 +4833,7 @@ class rpSBML:
         # compartments
         for comp_id, comp in compartments.items():
             comp_lst = []
-            if type(comp['annot']) == dict:
+            if type(comp['annot']) is dict:
                 for db, comps in comp['annot'].items():
                     for comp_name in comps:
                         comp_lst += [f"http://identifiers.org/{self.miriam_header['compartment'][db]}{comp_name}"]

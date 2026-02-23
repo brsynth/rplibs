@@ -3,7 +3,6 @@ from setuptools import (
     setup,
     find_packages
 )
-from re import search as re_search
 from os import path as os_path
 
 

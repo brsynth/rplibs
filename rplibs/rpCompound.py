@@ -31,7 +31,6 @@ from logging import (
     Logger,
     getLogger
 )
-from copy import deepcopy
 from chemlite import Compound
 from rplibs.rpObject import rpObject
 

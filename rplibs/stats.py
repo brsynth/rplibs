@@ -2,14 +2,6 @@ from typing import (
     Dict,
     List
 )
-from logging import (
-    Logger,
-    getLogger
-)
-from os import (
-    path as os_path,
-    makedirs
-)
 from brs_utils import create_logger
 from rplibs import rpPathway
 from rplibs.Args import build_args_parser
@@ -69,8 +61,7 @@ def entry_point():
   
     parser = build_args_parser(
         prog='stats',
-        description='Statistics on SBML file(s)',
-        m_add_args='add_arguments'
+        description='Statistics on SBML file(s)'
     )
     args = parser.parse_args()
 

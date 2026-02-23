@@ -76,7 +76,7 @@ class rpGraph:
 
         rpsbml_model = self.rpsbml.getModel()
         # rp_species = [rpsbml_model.getSpecies(i) for i in self.rpsbml.readUniqueRPspecies(pathway_id)]
-        groups = rpsbml_model.getPlugin('groups')
+        #groups = rpsbml_model.getPlugin('groups')
         # c_s = self.rpsbml.getGroup(central_species_group_id)
         s_s = self.rpsbml.getGroup(sink_species_group_id)
         # rp_central_species_id = [i.getIdRef() for i in c_s.getListOfMembers()]
@@ -277,7 +277,7 @@ class rpGraph:
             for n_n in succ_node_list:
                 n = self.G.nodes.get(n_n)
                 if n['type']=='reaction':
-                    if not n_n in flat_reac_list:
+                    if n_n not in flat_reac_list:
                         multi_reac.append(n_n)
             #remove the ones that already exist
             self.logger.debug('multi_reac: '+str(multi_reac))
@@ -293,7 +293,7 @@ class rpGraph:
                     if n_n in multi_reac:
                         self._recursiveReacSuccessors(n_n, current_reac_list, all_res, num_reactions)
                 elif n['type']=='species':
-                    if n['rp_trunk_species']==True:
+                    if n['rp_trunk_species']:
                         self._recursiveReacSuccessors(n_n, current_reac_list, all_res, num_reactions)
         return all_res
 
@@ -320,7 +320,7 @@ class rpGraph:
             for n_n in pred_node_list:
                 n = self.G.nodes.get(n_n)
                 if n['type']=='reaction':
-                    if not n_n in flat_reac_list:
+                    if n_n not in flat_reac_list:
                         multi_reac.append(n_n)
             #remove the ones that already exist
             self.logger.debug('multi_reac: '+str(multi_reac))
@@ -336,7 +336,7 @@ class rpGraph:
                     if n_n in multi_reac:
                         self._recursiveReacPredecessors(n_n, current_reac_list, all_res, num_reactions)
                 elif n['type']=='species':
-                    if n['rp_trunk_species']==True:
+                    if n['rp_trunk_species']:
                         self._recursiveReacPredecessors(n_n, current_reac_list, all_res, num_reactions)
         return all_res
 
@@ -380,28 +380,28 @@ class rpGraph:
                     reac_list.append(n_n)
                     self._recursiveReacPredecessors(n_n, reac_list)
             elif n['type']=='species':
-                if n['rp_trunk_species']==True:
+                if n['rp_trunk_species']:
                     self._recursiveReacPredecessors(n_n, reac_list)
                 else:
                     return reac_list
         return reac_list
 
 
-    def orderedRetroReactions(self):
-        """Public function to return the linear list of reactions
+    # def orderedRetroReactions(self):
+    #     """Public function to return the linear list of reactions
 
-        :return: List of node ids
-        :rtype: list
-        """
-        #Note: may be better to loop tho
-        for prod_spe in self._onlyProducedSpecies():
-            self.logger.debug('Testing '+str(prod_spe))
-            ordered = self._recursiveReacPredecessors(prod_spe, [])
-            self.logger.debug(ordered)
-            if len(ordered)==self.num_reactions:
-                return [i for i in reversed(ordered)]
-        self.logger.error('Could not find the full ordered reactions')
-        return []
+    #     :return: List of node ids
+    #     :rtype: list
+    #     """
+    #     #Note: may be better to loop tho
+    #     for prod_spe in self._onlyProducedSpecies():
+    #         self.logger.debug('Testing '+str(prod_spe))
+    #         ordered = self._recursiveReacPredecessors(prod_spe, [])
+    #         self.logger.debug(ordered)
+    #         if len(ordered)==self.num_reactions:
+    #             return [i for i in reversed(ordered)]
+    #     self.logger.error('Could not find the full ordered reactions')
+    #     return []
 
     ############################# graph analysis ################################
 

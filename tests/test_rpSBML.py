@@ -8,16 +8,10 @@ import pandas as pd
 from rplibs import rpSBML
 from typing import (
     Dict,
-    List,
-    Tuple
+    List
 )
 import cobra
 from cobra import io as cobra_io
-from           pathlib import Path
-from                os import path  as os_path
-from              json import load  as json_load
-from              json import loads as json_loads
-from                io import open  as io_open
 from main_rplibs import Main_rplibs
 
 class Test_rpSBML(Main_rplibs):

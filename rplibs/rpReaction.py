@@ -35,7 +35,6 @@ from logging import (
     Logger,
     getLogger
 )
-from math import isnan
 from chemlite import Reaction
 from rplibs.rpObject import rpObject
 
