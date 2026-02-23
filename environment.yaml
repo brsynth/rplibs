@@ -10,5 +10,6 @@ dependencies:
   - brs_utils
   - chemlite
   - rr_cache
+  - pip
   - pip:
       - cobra
