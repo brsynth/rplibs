@@ -5,21 +5,19 @@ Created on June 17 2020
 """
 import libsbml
 import pandas as pd
-from rplibs import (
-    rpSBML
-)
-from tempfile import (
-    NamedTemporaryFile
-)
+from rplibs import rpSBML
 from typing import (
     Dict,
     List,
     Tuple
 )
-from cobra import (
-    io as cobra_io,
-    Model as cobra_model
-)
+import cobra
+from cobra import io as cobra_io
+from           pathlib import Path
+from                os import path  as os_path
+from              json import load  as json_load
+from              json import loads as json_loads
+from                io import open  as io_open
 from main_rplibs import Main_rplibs
 
 class Test_rpSBML(Main_rplibs):
@@ -38,7 +36,7 @@ class Test_rpSBML(Main_rplibs):
     #ref_name  = 'RetroPath_Pathway_1_1'
     #ref_score = 0.5684564101634014
 
-    rpsbml_lycopene_name = "002_0001"
+    rpsbml_lycopene_name = "rp_002_0001"
     rpsbml_lycopene_specie_id = ['CMPD_0000000001', 'MNXM24', 'M_ppi_c', 'M_grdp_c', 'CMPD_0000000003', 'MNXM83', 'MNXM8975', 'TARGET_0000000001']
 
     def setUp(self):
@@ -139,44 +137,28 @@ class Test_rpSBML(Main_rplibs):
             compartment='c',
             strict=True
         )
-        self.assertIsInstance(
-            res,
-            bool
-        )
-        self.assertTrue(res)
+        self.assertEqual(res.getId(), 'c')
         # Test - 2
         res = self.rpsbml_lycopene.has_compartment(
             compartment='C',
             strict=True
         )
-        self.assertIsInstance(
-            res,
-            bool
-        )
-        self.assertFalse(res)
+        self.assertIsNone(res)
         # Test - 3
         res = self.rpsbml_lycopene.has_compartment(
             compartment='c'
         )
-        self.assertIsInstance(
-            res,
-            bool
-        )
-        self.assertTrue(res)
+        self.assertEqual(res.getId(), 'c')
         # Test - 4
         res = self.rpsbml_lycopene.has_compartment(
             compartment='C',
         )
-        self.assertIsInstance(
-            res,
-            bool
-        )
-        self.assertTrue(res)
+        self.assertEqual(res.getId(), 'c')
         # Test - 5
         res = self.rpsbml_lycopene.has_compartment(
             compartment='intracellular space'
         )
-        self.assertTrue(res)
+        self.assertEqual(res.getId(), 'c')
 
     def test_search_specie(self):
         # Test - 1
@@ -298,67 +280,44 @@ class Test_rpSBML(Main_rplibs):
 
     def test_speciesMatchWith(self):
         # Return type.
-        species_match_with = rpSBML.speciesMatchWith(
+        corr_spe, miss_spe = self.rpsbml_none.speciesMatchWith(
             [],
-            self.rpsbml_none,
             ''
         )
-        self.assertIsInstance(species_match_with, Tuple)
-        self.assertIsInstance(species_match_with[0], Dict)
-        self.assertIsInstance(species_match_with[1], List)
+        self.assertIsInstance(corr_spe, Dict)
+        self.assertIsInstance(miss_spe, List)
         # Basic
         self.assertEqual(
             sorted(self.rpsbml_lycopene_specie_id),
-            sorted(rpSBML.speciesMatchWith(
+            sorted(self.rpsbml_lycopene.speciesMatchWith(
                 self.rpsbml_lycopene_specie_id,
-                self.rpsbml_lycopene,
                 'c'
             )[0].values())
         )
         # Challenge - 1
-        species_match_with = rpSBML.speciesMatchWith(
-            ['HMDB00250', '13420'],
-            self.rpsbml_lycopene,
+        corr_spe, miss_spe = self.rpsbml_lycopene.speciesMatchWith(
+            ['HMDB00250', 'CHEBI:13420'],
             'c'
         )
-        self.assertEqual(
-            len(species_match_with[0]),
-            2
+        self.assertDictEqual(
+            corr_spe,
+            {'HMDB00250': 'M_ppi_c', 'CHEBI:13420': 'M_ppi_c'}
         )
-        self.assertEqual(
-            len(set(species_match_with[0].values())),
-            1
-        )
-        self.assertIn(
-            'M_ppi_c',
-            species_match_with[0].values()
-        )
-        self.assertFalse(species_match_with[1])
+        self.assertListEqual(miss_spe, [])
         # Challenge - 2
-        species_match_with = rpSBML.speciesMatchWith(
+        corr_spe, miss_spe = self.rpsbml_lycopene.speciesMatchWith(
             ['HMDB00250', '13420'],
-            self.rpsbml_lycopene,
             ''
         )
-        self.assertFalse(species_match_with[0])
-        self.assertEqual(
-            len(species_match_with[1]),
-            2
-        )
+        self.assertDictEqual(corr_spe, {})
+        self.assertListEqual(sorted(miss_spe), sorted(['HMDB00250', '13420']))
         # Challenge - 3
-        species_match_with = rpSBML.speciesMatchWith(
+        corr_spe, miss_spe = self.rpsbml_lycopene.speciesMatchWith(
             ['MNXM24', '13421'],
-            self.rpsbml_lycopene,
             'c'
         )
-        self.assertEqual(
-            ['MNXM24'],
-            list(species_match_with[0].values())
-        )
-        self.assertEqual(
-            ['13421'],
-            species_match_with[1]
-        )
+        self.assertDictEqual(corr_spe, {'MNXM24': 'MNXM24'})
+        self.assertListEqual(miss_spe, ['13421'])
 
     def test_is_boundary_type(self):
         # TODO: implement test which doesn't account abount SBO terms, to see how compartment_id ... are managed
@@ -450,12 +409,11 @@ class Test_rpSBML(Main_rplibs):
         # Challenge - create
         species_id='M_ipdp_c'
         species_name='Isopentenyl diphosphate'
-        chemXref = {
-            'bigg': ['ipdp'],
-            'biocyc': ['TUNGSTATE'],
-            'chebi': ['128769', '6037']
-            #'metanetx': ['MNXM83']
-        }
+        chemXref = [
+            'http://identifiers.org/chebi/CHEBI:6037',
+            'http://identifiers.org/chebi/CHEBI:128769',
+            'http://identifiers.org/biocyc/META:TUNGSTATE'
+        ]
         inchi="InChI=1S/C5H12O7P2/c1-5(2)3-4-11-14(9,10)12-13(6,7)8/h1,3-4H2,2H3,(H,9,10)(H2,6,7,8)/p-3"
         inchikey="NUHSROFQTUXZQQ-UHFFFAOYSA-K"
         smiles="C=C(C)CCOP(=O)([O-])OP(=O)([O-])[O-]"
@@ -485,17 +443,13 @@ class Test_rpSBML(Main_rplibs):
             species_name,
             specie.getName()
         )
-        self.assertTrue(
-            self.rpsbml_lycopene.compareAnnotations_annot_dict(
-                specie.getAnnotation(),
-                chemXref
-            )
+        self.assertListEqual(
+            sorted(chemXref),
+            sorted(rpSBML.readMIRIAMAnnotation(specie.getAnnotation()))
         )
-        self.assertTrue(
-            self.rpsbml_lycopene.compareAnnotations_dict_dict(
-                self.rpsbml_lycopene.readBRSYNTHAnnotation(specie.getAnnotation()),
-                brsynth_annot
-            )
+        self.assertDictEqual(
+            self.rpsbml_lycopene.readBRSYNTHAnnotation(specie.getAnnotation()),
+            brsynth_annot
         )
         self.assertEqual(
             compartment,
@@ -532,7 +486,7 @@ class Test_rpSBML(Main_rplibs):
         model = rpsbml_ecoli.to_cobra()
         self.assertIsInstance(
             model,
-            cobra_model
+            cobra.Model
         )
 
     def test_from_cobra(self):
@@ -547,6 +501,22 @@ class Test_rpSBML(Main_rplibs):
         self.assertIsInstance(
             rpsbml,
             rpSBML
+        )
+
+    def test_isolated_species(self):
+        self.assertSetEqual(
+            set(self.rpsbml_lycopene.get_isolated_species()),
+            set(["MNXM24", "MNXM8975"])
+        )
+        self.rpsbml_lycopene.set_isolated_species(["MNXM24"])
+        self.assertSetEqual(
+            set(self.rpsbml_lycopene.get_isolated_species()),
+            set(["MNXM24"])
+        )
+        self.rpsbml_lycopene.rm_isolated_species()
+        self.assertListEqual(
+            self.rpsbml_lycopene.get_isolated_species(),
+            []
         )
 
     #def test_initEmpty(self):002_0001

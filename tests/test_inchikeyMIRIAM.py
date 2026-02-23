@@ -5,10 +5,12 @@ Created on Jul 15 2020
 """
 
 from tempfile       import NamedTemporaryFile
+from rplibs import inchikeyMIRIAM
 from os             import path as os_path
+from io             import open as io_open
+from pathlib        import Path
 from main_rplibs import Main_rplibs
 from brs_utils import extract_gz_to_string
-from rplibs import inchikeyMIRIAM
 
 
 class Test_inchikeyMIRIAM(Main_rplibs):

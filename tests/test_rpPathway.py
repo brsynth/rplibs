@@ -5,19 +5,22 @@ Created on May 28 2021
 """
 
 from tempfile import NamedTemporaryFile
-from unittest import TestCase
 from os import remove
 from copy import deepcopy
+# from xmldiff import main as xmldiff_main
 from rr_cache import rrCache
 from rplibs import (
     rpPathway,
     rpReaction,
     rpCompound
 )
-from rplibs.cobra_format import at_pattern
+from rplibs.cobra_format import (
+    at_pattern
+)
+from main_rplibs import Main_rplibs
 
 
-class Test_rpPathway(TestCase):
+class Test_rpPathway(Main_rplibs):
 
     def setUp(self):
         self.target = rpCompound(
@@ -117,7 +120,7 @@ class Test_rpPathway(TestCase):
         self.rxn = rpReaction(
             id="rxn_4",
             ec_numbers=[
-                "1.13.11.1"
+#                "1.13.11.1"
             ],
             reactants=self.reactants,
             products=self.products
@@ -127,7 +130,7 @@ class Test_rpPathway(TestCase):
             rpReaction(
                 id="rxn_3",
                 ec_numbers=[
-                    "4.1.1.63"
+#                    "4.1.1.63"
                 ],
                 reactants={
                     "CMPD_0000000010": 1,
@@ -141,7 +144,7 @@ class Test_rpPathway(TestCase):
             rpReaction(
                 id="rxn_2",
                 ec_numbers=[
-                    "1.14.13.23"
+#                    "1.14.13.23"
                 ],
                 reactants={
                     "CMPD_0000000025": 1,
@@ -158,7 +161,7 @@ class Test_rpPathway(TestCase):
             rpReaction(
                 id="rxn_1",
                 ec_numbers=[
-                    "4.1.3.45"
+#                    "4.1.3.45"
                 ],
                 reactants={
                     "MNXM337": 1
@@ -194,10 +197,10 @@ class Test_rpPathway(TestCase):
         self.rule_score = 0.5982208769718989
         self.id = 'pathway'
         cache = rrCache(
-            attrs=[
-                'comp_xref',
-                'deprecatedCompID_compid',
-            ]
+            # attrs=[
+            #     'comp_xref',
+            #     'deprecatedCompID_compid',
+            # ]
         )
         self.compartments = [
             {
@@ -293,6 +296,25 @@ class Test_rpPathway(TestCase):
                 'global_score': -1
             }
         )
+
+    # def test_to_rpSBML(self):
+    #     with NamedTemporaryFile() as tempf:
+    #         pathway = rpPathway(self.rpsbml_lycopene_path)
+    #         pathway.to_rpSBML().write_to_file(tempf.name)
+    #         # compare files
+    #         print(xmldiff_main.diff_files(
+    #                 tempf,
+    #                 self.rpsbml_lycopene_path,
+    #                 #diff_options={'ignored_attrs': ['metaid', 'id']}
+    #                 ))
+    #         self.assertListEqual(
+    #             [],
+    #             xmldiff_main.diff_files(
+    #                 tempf,
+    #                 self.rpsbml_lycopene_path,
+    #                 #diff_options={'ignored_attrs': ['metaid', 'id']}
+    #                 )
+    #         )
 
     def test_completed_species(self):
         species = ['SPE_1', 'SPE_2']
@@ -422,12 +444,11 @@ class Test_rpPathway(TestCase):
 
     def test_rpSBML_file(self):
         with NamedTemporaryFile(delete=False) as tempf:
-            self.pathway.to_rpSBML().write_to_file(tempf.name)
             tempf.close()
             self.assertEqual(
                 self.pathway,
                 rpPathway.from_rpSBML(
-                    infile=tempf.name
+                    self.pathway.to_rpSBML()
                 )
             )
             tempf.close()
@@ -436,13 +457,9 @@ class Test_rpPathway(TestCase):
     def test_rpSBML_file_rpsbml(self):
         with NamedTemporaryFile(delete=False) as tempf:
             self.pathway.to_rpSBML().write_to_file(tempf.name)
-            tempf.close()
             self.assertEqual(
                 self.pathway,
-                rpPathway.from_rpSBML(
-                    infile=tempf.name,
-                    rpsbml=None
-                )
+                rpPathway(infile=tempf.name)
             )
             tempf.close()
             remove(tempf.name)

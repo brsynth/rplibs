@@ -5,6 +5,7 @@ Created on July 22 2021
 """
 
 from unittest import TestCase
+from copy import deepcopy
 from chemlite import Compound
 from rplibs.rpCompound import rpCompound
 

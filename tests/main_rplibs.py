@@ -1,5 +1,6 @@
 from unittest  import TestCase
 from os        import path as os_path
+from shutil    import rmtree
 from brs_utils import (
     create_logger,
 )

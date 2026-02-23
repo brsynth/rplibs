@@ -10,9 +10,9 @@ from os import (
     path as os_path,
     makedirs
 )
-from .Args import add_arguments
-from rptools.rplibs import rpPathway
-from rptools import build_args_parser
+from brs_utils import create_logger
+from rplibs import rpPathway
+from rplibs.Args import build_args_parser
 
 
 def counts(pathways: List[rpPathway]) -> Dict:
@@ -70,16 +70,16 @@ def entry_point():
     parser = build_args_parser(
         prog='stats',
         description='Statistics on SBML file(s)',
-        m_add_args=add_arguments
+        m_add_args='add_arguments'
     )
     args = parser.parse_args()
 
-    from rptools.__main__ import init
-    logger = init(parser, args)
+    # Create logger
+    logger = create_logger(parser.prog, args.log)
 
     # Build the list of pathways to rank
     pathways = [
-        rpPathway.from_rpSBML(
+        rpPathway(
             infile=pathway_filename,
             logger=logger
         ) for pathway_filename in args.pathways

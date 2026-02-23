@@ -28,8 +28,7 @@ from typing import (
     List,
     Set,
     Union,
-    TypeVar,
-    Tuple
+    TypeVar
 )
 from logging import (
     Logger,
@@ -42,33 +41,21 @@ from chemlite import (
     Pathway,
     Compound
 )
+from rr_cache import rrCache
 from numpy import isin
-from .rpSBML import rpSBML
-from .rpReaction import rpReaction
-from .rpCompound import rpCompound
-from .rpObject import rpObject
-from .cobra_format import (
-    uncobraize,
+from rplibs.rpSBML import rpSBML
+from rplibs.rpReaction import (
+    rpReaction,
+    write_to
 )
-from .cobra_format import (
+from rplibs.rpCompound import rpCompound
+from rplibs.rpObject import rpObject
+from rplibs.cobra_format import (
     cobra_suffix,
     cobraize,
+    uncobraize
 )
 
-
-# def gen_dict_extract(key, var):
-#     if hasattr(var,'items'):
-#         for k, v in var.items():
-#             print(k, v)
-#             if k == key:
-#                 yield v
-#             if isinstance(v, dict):
-#                 for result in gen_dict_extract(key, v):
-#                     yield result
-#             elif isinstance(v, list):
-#                 for d in v:
-#                     for result in gen_dict_extract(key, d):
-#                         yield result
 
 class rpPathway(Pathway, rpObject):
     """A class to implement a metabolic pathway
@@ -80,7 +67,7 @@ class rpPathway(Pathway, rpObject):
         'id': 'c',
         'name': 'cytosol',
         'annot': {
-            'name': ['cytosol'],
+            # 'name': ['cytosol'],
             'seed': ['cytosol', 'c0', 'c'],
             'mnx': ['MNXC3'],
             'bigg': ['c_c', 'c']
@@ -89,8 +76,8 @@ class rpPathway(Pathway, rpObject):
 
     def __init__(
         self,
-        id: str,
-        cache: Cache = None,
+        infile: str = None,
+        id: str = '',
         logger: Logger = getLogger(__name__)
     ):
         """Create a rpPathway object with default settings.
@@ -99,14 +86,16 @@ class rpPathway(Pathway, rpObject):
         ----------
         id: str
             ID of the reaction
-        cache: Cache, optional
-            Cache to store compounds once over reactions
+        infile: str
+            Path to the input file (SBML)
         logger : Logger, optional
         """
+        self.__rpsbml = rpSBML(inFile=infile, logger=logger)
+        id = id if id else self.get_rpsbml().getName()
         Pathway.__init__(
             self,
             id=id,
-            cache=cache,
+            # cache=cache,
             logger=logger
         )
         rpObject.__init__(self, logger)
@@ -136,10 +125,8 @@ class rpPathway(Pathway, rpObject):
         # Additional names for methods
         self.get_sink = self.get_sink_species
         self.set_sink = self.set_sink_species
-
-    ## OUT METHODS
-    # def __repr__(self):
-    #     return dumps(self.to_dict(), indent=4)
+        if infile:
+            self.__import_rpSBML(self.__rpsbml)
 
     def _to_dict(
         self,
@@ -178,22 +165,6 @@ class rpPathway(Pathway, rpObject):
             'unit_defs': deepcopy(self.get_unit_defs()),
             'compartments': deepcopy(self.get_compartments()),
         }
-
-    # def __eq__(self, other) -> bool:
-    #     """Returns the equality between two rpPathway objects."""
-    #     if not isinstance(self, other.__class__):
-    #         return False
-    #     # Compare with specific keys
-    #     return all(
-    #         (
-    #             self._to_dict().get(key) == other._to_dict().get(key)
-    #             or self._to_dict().get(key) is other._to_dict().get(key)
-    #         )
-    #         for key in [
-    #             'reactions',
-    #             'target',
-    #         ]
-    #     )
 
     ## READ METHODS
     def get_species_groups(self) -> Dict[str, Set]:
@@ -653,9 +624,8 @@ class rpPathway(Pathway, rpObject):
         # except TypeError:
         #     self.__set_species_group('intermediate', [])
 
-    @staticmethod
-    def from_rpSBML(
-        infile: str = None,
+    def __import_rpSBML(
+        self,
         rpsbml: rpSBML = None,
         logger: Logger = getLogger(__name__)
     ) -> 'rpPathway':
@@ -676,78 +646,13 @@ class rpPathway(Pathway, rpObject):
         -------
         rpPathway object built.
         """
-        def write_to(data: Dict, object: TypeVar) -> None:
-            # Detect fba and thermo infos
-            for key, value in data.items():
-                if value == 'None':
-                    value = None
-                elif str(value) == 'nan':
-                    value = 'NaN'
-                if isinstance(value, dict):
-                    keyword = key.split(rpObject.get_sep())[0]
-                    offset = (
-                        len(keyword)
-                        + len(rpObject.get_sep())
-                    )
-                    getattr(
-                        object,
-                        'add_'+keyword.replace('rp_', '')+'_info'
-                    )(key[offset:], value)
-                else:
-                    try:
-                        getattr(
-                            object,
-                            'set_'+key.replace('rp_', '')
-                        )(value)
-                    except AttributeError:
-                        pass
 
-        def build_reaction(
-            rxn_id: str,
-            infos: Dict,
-            logger: Logger = getLogger(__name__)
-        ) -> Tuple[
-            rpReaction,
-            Union[str, None]
-        ]:
-            # try:
-            #     ec_numbers = infos['miriam']['ec-code']
-            # except KeyError:
-            #     ec_numbers = []
-            reaction = rpReaction(
-                id=rxn_id,
-                # ec_numbers=ec_numbers,
-                reactants=infos['left'],
-                products=infos['right'],
-                lower_flux_bound=infos['fbc_lower_value'],
-                upper_flux_bound=infos['fbc_upper_value'],
-                flux_bound_units=infos['fbc_units'],
-                reversible=infos['reversible'],
-                miriam=infos['miriam'],
-                logger=logger
-            )
-            # Add additional infos
-            write_to(infos['brsynth'], reaction)
-            # Detects if the current reaction produces the target
-            target_id = [spe_id for spe_id in reaction.get_products_ids() if 'TARGET' in spe_id]
-            if target_id != []:
-                target_id = target_id[0]
-            else:
-                target_id = None
-            return reaction, target_id
-
-        if infile is not None:
-            rpsbml = rpSBML(inFile=infile, logger=logger)
-
-        # Create the rpPathway object
-        pathway = rpPathway(
-            id=rpsbml.getName(),
-            logger=logger
-        )
+        # rpsbml = self.get_rpsbml()
+        self.__rpsbml = rpsbml
 
         ## COMPARTMENTS
         for compartment in rpsbml.getModel().getListOfCompartments():
-            pathway.add_compartment(
+            self.add_compartment(
                 id=compartment.getId(),
                 name=compartment.getName(),
                 annot=rpSBML.readMIRIAMAnnotation(compartment.getAnnotation()),
@@ -756,7 +661,7 @@ class rpPathway(Pathway, rpObject):
         ## UNIT DEFINITIONS
         for unit_defs in rpsbml.getModel().getListOfUnitDefinitions():
             for unit in unit_defs.getListOfUnits():
-                pathway.add_unit_def(
+                self.add_unit_def(
                     id=unit.getId(),
                     kind=unit.getKind(),
                     exp=unit.getExponent(),
@@ -766,7 +671,7 @@ class rpPathway(Pathway, rpObject):
 
         ## PARAMETERS
         for param in rpsbml.getModel().getListOfParameters():
-            pathway.add_parameter(
+            self.add_parameter(
                 id=param.getId(),
                 value=param.getValue(),
                 units=param.getUnits()
@@ -794,12 +699,12 @@ class rpPathway(Pathway, rpObject):
 
         ## REACTIONS
         for rxn_id, rxn_infos in rpsbml.read_reactions(pathway_id).items():
-            rxn_infos['fbc_lower_value'] = pathway.get_parameter_value(rxn_infos['fbc_lower_value'])
-            rxn_infos['fbc_upper_value'] = pathway.get_parameter_value(rxn_infos['fbc_upper_value'])
-            rxn_infos['fbc_units'] = pathway.get_parameter_units(rxn_infos['fbc_lower_value'])
-            reaction, target_id = build_reaction(rxn_id, rxn_infos, logger)
+            rxn_infos['fbc_lower_value'] = self.get_parameter_value(rxn_infos['fbc_lower_value'])
+            rxn_infos['fbc_upper_value'] = self.get_parameter_value(rxn_infos['fbc_upper_value'])
+            rxn_infos['fbc_units'] = self.get_parameter_units(rxn_infos['fbc_lower_value'])
+            reaction, target_id = rpReaction.build(rxn_id, rxn_infos, logger)
             # Add the reaction to the pathway
-            pathway.add_reaction(
+            self.add_reaction(
                 rxn=reaction,
                 target_id=target_id
             )
@@ -813,7 +718,7 @@ class rpPathway(Pathway, rpObject):
                     rpsbml.getGroup(group_id).getAnnotation(),
                     rpsbml.logger
                 )
-                write_to(annot, pathway)
+                write_to(annot, self)
             # 'rp_sink_species', 'rp_completed_species', 'rp_trunk_species'
             # have no annotation to write into rpPathway
             else:
@@ -821,31 +726,146 @@ class rpPathway(Pathway, rpObject):
                     {
                         group_id: rpsbml.readGroupMembers(group_id)
                     },
-                    pathway
+                    self
                 )
 
-        return pathway
+    def get_rpsbml(self) -> rpSBML:
+        """Get the rpSBML object."""
+        return self.__rpsbml
 
-    def to_rpSBML(self) -> rpSBML:
+    def to_rpSBML(self, cache: rrCache = None, local_cache: dict = {}) -> rpSBML:
         """Convert the current rpPathway object
         into a rpSBML object.
+
+        Parameters
+        ----------
+        cache: rrCache, optional
+            Cache to use for the conversion
+        local_cache: dict, optional
+            Local cache to use for the conversion
 
         Returns
         -------
         rpSBML object.
         """
 
-        rpsbml = rpSBML(name='rp_'+self.get_id(), logger=self.get_logger())
-
+        rpsbml = self.get_rpsbml()
+        # print(self.get_compartments())
         ## Create a generic Model, ie the structure and unit definitions that we will use the most
         rpsbml.genericModel(
-            self.get_id(),
-            'RP_model_'+self.get_id(),
-            self.get_compartments(),
-            self.get_unit_defs(),
+            modelName=self.get_id(),
+            modelID=self.get_id(),
+            compartments=self.get_compartments(),
+            unit_def=self.get_unit_defs(),
             # upper_flux_bound,
             # lower_flux_bound
         )
+
+        ## Add species to the model
+        for specie in self.get_species():
+            if not isinstance(specie, rpCompound):
+                specie = rpCompound.from_compound(specie)
+            # Convert into MetaNetX ID if possible
+            old_species_id = species_id = specie.get_id()
+            if not specie.get_id().startswith('MNX') and cache is not None:
+                # If present in the cache, use the cached value
+                if local_cache.get(old_species_id, '') != '':
+                    self.get_logger().debug(
+                        f'Species {old_species_id} already converted into {species_id} for MetaNetX annotation, using cached value.'
+                    )
+                    species_id = local_cache[old_species_id]
+                # BiGG
+                elif species_id.startswith('M_'):
+                    # Remove 'M_' prefix and compartment suffix if exist
+                    species_id = species_id[2:]
+                    if species_id[-2] == '_':
+                        species_id = species_id[:-2]
+                    # collect all keys strating with 'bigg'
+                    bigg_keys = [k for k in cache.get('cid_xref').keys() if k.startswith('bigg')]
+                    for bigg_key in bigg_keys:
+                        # print(cache.get('cid_xref')[bigg_key].keys())
+                        if species_id in cache.get('cid_xref')[bigg_key]:
+                            species_id = cache.get('cid_xref')[bigg_key][species_id]
+                            break
+                # ChEBI
+                elif species_id.startswith('CHEBI:'):
+                    # Remove 'CHEBI:' prefix
+                    species_id = species_id[6:]
+                    # collect all keys strating with 'chebi'
+                    chebi_keys = [k for k in cache.get('cid_xref').keys() if k.startswith('chebi')]
+                    for chebi_key in chebi_keys:
+                        if species_id in cache.get('cid_xref')[chebi_key]:
+                            species_id = cache.get('cid_xref')[chebi_key][species_id]
+                            break
+                # # KEGG
+                # elif species_id.startswith('C'):
+                #     # Remove 'C' prefix
+                #     species_id = species_id[1:]
+                #     # collect all keys strating with 'kegg'
+                #     kegg_keys = [k for k in cache.get('cid_xref').keys() if k.startswith('kegg')]
+                #     for kegg_key in kegg_keys:
+                #         if species_id in cache.get('cid_xref')[kegg_key]:
+                #             species_id = cache.get('cid_xref')[kegg_key][species_id]
+                #             break
+                if old_species_id != species_id:
+                    local_cache[old_species_id] = species_id
+                    self.get_logger().debug(
+                        f'Species {old_species_id} converted into {species_id} for MetaNetX annotation.'
+                    )
+
+            # To not add twice the same compound under different notations,
+            # e.g. the transfo to complete has O=O species under M_h2o_c notation and
+            # has been completed by another O=O under CHEBI:15379
+            if species_id not in rpsbml.getListOfSpeciesIds():
+                rpsbml.createSpecies(
+                    species_id=species_id,
+                    species_name=specie.get_name(),
+                    inchi=specie.get_inchi(),
+                    inchikey=specie.get_inchikey(),
+                    smiles=specie.get_smiles(),
+                    compartment=specie.get_compartment(),
+                    infos=self.get_specie(specie.get_id())._to_dict(full=False)
+                )
+            else:
+                self.get_logger().debug(
+                    f'Species {species_id} already exist in the rpSBML model, nothing added.'
+                )
+
+        ## Add reactions to the model
+        for rxn in self.get_list_of_reactions():
+            xref = {
+                'ec-code': rxn.get_ec_numbers(),
+                'miriam': rxn.get_miriam()
+            }
+            xref = [f'http://identifiers.org/ec-code/{ec}' for ec in xref['ec-code'] if ec != '']
+            # Convert reactants and products compounds IDs into cache format for MetaNetX annotation
+            self.get_logger().debug(f'rxn {rxn.get_id()} before conversion: reactants {rxn.get_reactants()}, products {rxn.get_products()}')
+            reactants = dict(rxn.get_reactants())
+            products = dict(rxn.get_products())
+            # Apply local cache transformation to both reactants and products
+            for species_dict in (reactants, products):
+                for id in list(species_dict.keys()):
+                    if id in local_cache:
+                        cached_id = local_cache[id]
+                        # If the cached ID is not already in the species dict, replace the ID by the cached ID
+                        if cached_id not in species_dict:
+                            species_dict[cached_id] = species_dict.pop(id)
+                        else: # If the cached ID is already in the species dict, sum the stoichiometry of the two IDs and replace the ID by the cached ID
+                            species_dict[cached_id] += species_dict.pop(id)
+            self.get_logger().debug(f'rxn {rxn.get_id()} after conversion: reactants {reactants}, products {products}')
+            # Add the reaction in the model
+            rpsbml.createReaction(
+                id=rxn.get_id(),
+                reactants=reactants,
+                products=products,
+                smiles=rxn.get_smiles(),
+                fbc_upper=rxn.get_fbc_upper(),
+                fbc_lower=rxn.get_fbc_lower(),
+                fbc_units=rxn.get_fbc_units(),
+                reversible=rxn.reversible(),
+                reacXref=xref, 
+                infos=rxn._to_dict(full=False)
+            )
 
         ## Create the groups (pathway, species, sink species)
         rpsbml.create_enriched_group(
@@ -857,46 +877,33 @@ class rpPathway(Pathway, rpObject):
             }
         )
         for group_id, group_members in self.get_species_groups().items():
+            _members = [local_cache.get(spe_id, spe_id) for spe_id in group_members]
             rpsbml.create_enriched_group(
                 group_id=f'rp_{group_id}_species',
-                members=group_members
-            )
-
-        ## Add species to the model
-        for specie in self.get_species():
-            if isinstance(specie, Compound):
-                specie = rpCompound.from_compound(specie)
-            rpsbml.createSpecies(
-                species_id=specie.get_id(),
-                species_name=specie.get_name(),
-                inchi=specie.get_inchi(),
-                inchikey=specie.get_inchikey(),
-                smiles=specie.get_smiles(),
-                compartment=specie.get_compartment(),
-                infos=self.get_specie(specie.get_id())._to_dict(full=False)
-            )
-
-        ## Add reactions to the model
-        for rxn in self.get_list_of_reactions():
-            xref = {
-                'ec-code': rxn.get_ec_numbers(),
-                **rxn.get_miriam()
-            }
-            # Add the reaction in the model
-            rpsbml.createReaction(
-                id=rxn.get_id(),
-                reactants=rxn.get_reactants(),
-                products=rxn.get_products(),
-                smiles=rxn.get_smiles(),
-                fbc_upper=rxn.get_fbc_upper(),
-                fbc_lower=rxn.get_fbc_lower(),
-                fbc_units=rxn.get_fbc_units(),
-                reversible=rxn.reversible(),
-                reacXref=xref, 
-                infos=rxn._to_dict(full=False)
+                members=_members
             )
 
         return rpsbml
+
+    @staticmethod
+    def from_rpSBML(rpsbml: rpSBML) -> 'rpPathway':
+        """Build a rpPathway object from a rpSBML object.
+
+        Parameters
+        ----------
+        rpsbml: rpSBML
+            rpSBML object
+
+        Returns
+        -------
+        rpPathway object built.
+        """
+        pathway = rpPathway(
+            id=rpsbml.getName(),
+            logger=rpsbml.logger
+        )
+        pathway.__import_rpSBML(rpsbml)
+        return pathway
 
     def add_reaction(
         self,
@@ -990,3 +997,42 @@ class rpPathway(Pathway, rpObject):
         for spe_id in self.get_species_ids():
             self.rename_compound(spe_id, uncobraize(spe_id))
 
+    def create_target_consumption_reaction(
+        target_id: str, logger: Logger = getLogger(__name__)
+    ) -> "rpReaction":
+        rxn = rpReaction(id="rxn_target", logger=logger)
+        rxn.add_reactant(compound_id=target_id, stoichio=1)
+        return rxn
+
+    def setup_pathway_fba(self):
+
+        # Remove isolated species
+        self.set_fba_ignored_species([])
+        self.get_rpsbml().rm_isolated_species()
+
+        # Create consumption of the target
+        rxn_target = rpReaction(id="rxn_target", logger=self.get_logger())
+        rxn_target.add_reactant(compound_id=self.get_target_id(), stoichio=1)
+
+        # Set Flux Bounds
+        for rxn in self.get_list_of_reactions() + [rxn_target]:
+            rxn.set_fbc(l_bound=0, u_bound=rpReaction.get_default_fbc_upper())
+            rxn.set_reversible(False)
+
+        # Create the target consumption reaction in the rpSBML
+        self.get_rpsbml().createReaction(
+            id=rxn_target.get_id(),
+            reactants=rxn_target.get_reactants(),
+            products=rxn_target.get_products(),
+            smiles=rxn_target.get_smiles(),
+            fbc_upper=rxn_target.get_fbc_upper(),
+            fbc_lower=rxn_target.get_fbc_lower(),
+            fbc_units=rxn_target.get_fbc_units(),
+            reversible=rxn_target.reversible(),
+            reacXref=rxn_target.get_ec_numbers(),
+            infos=rxn_target._to_dict(full=False),
+        )
+
+    def write_to_file(self, outfile: str) -> None:
+        """Write the pathway into a SBML file."""
+        self.to_rpSBML().write_to_file(outfile)
