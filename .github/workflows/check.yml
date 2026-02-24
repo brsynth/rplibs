@@ -1,12 +1,13 @@
 name: Python Code Quality
 
 on:
+  pull_request:
   push:
-    branches: [ main ]
+    branches:
+      - stable
+      - main
     paths:
       - '**.py'
-  pull_request:
-    branches: [ main ]
 
 jobs:
   lint:

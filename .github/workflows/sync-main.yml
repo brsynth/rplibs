@@ -1,0 +1,23 @@
+name: Sync stable to main
+
+on:
+  push:
+    branches:
+      - stable
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create PR to main
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: sync/stable-to-main
+          commit-message: "chore(sync): merge stable into main"
+          title: "Sync stable → main"
+          body: "Automated synchronization PR"
+          base: main

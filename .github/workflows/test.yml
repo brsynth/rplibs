@@ -4,13 +4,13 @@
 name: Tests
 
 on:
-
+  pull_request:
   push:
-    branches: [ main, master, dev ]
+    branches:
+      - stable
+      - main
     paths:
       - '**.py'
-  pull_request:
-    branches: [ main, master ]
 
 jobs:
 
