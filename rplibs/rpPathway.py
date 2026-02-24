@@ -1,5 +1,3 @@
-"""A class to represent a metabolic pathway."""
-
 # The MIT License (MIT)
 #
 # Copyright (c) 2018 Institute for Molecular Systems Biology, ETH Zurich.
