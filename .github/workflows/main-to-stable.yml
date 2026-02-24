@@ -1,0 +1,29 @@
+name: Auto PR main → stable
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Pull Request to stable
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: auto/main-to-stable
+          base: stable
+          title: "Sync main → stable"
+          body: "Automated PR created after push to main."
+          commit-message: "chore(sync): main → stable"
+          delete-branch: true
