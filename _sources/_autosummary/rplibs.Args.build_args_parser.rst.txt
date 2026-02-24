@@ -1,0 +1,6 @@
+rplibs.Args.build\_args\_parser
+===============================
+
+.. currentmodule:: rplibs.Args
+
+.. autofunction:: build_args_parser

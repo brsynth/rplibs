@@ -1,7 +1,7 @@
-rplibs.Args
-===========
+rplibs.stats
+============
 
-.. automodule:: rplibs.Args
+.. automodule:: rplibs.stats
 
    
    
@@ -15,8 +15,9 @@ rplibs.Args
       :toctree:
       :nosignatures:
    
-      add_arguments
-      build_args_parser
+      counts
+      entry_point
+      print_stats
    
    
 

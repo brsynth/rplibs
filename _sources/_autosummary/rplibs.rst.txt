@@ -26,15 +26,15 @@
    :template: custom-module-template.rst
    :recursive:
 
-   rplibs.Args
-   rplibs.cobra_format
-   rplibs.inchikeyMIRIAM
-   rplibs.rpCompound
-   rplibs.rpGraph
-   rplibs.rpObject
-   rplibs.rpPathway
-   rplibs.rpReaction
-   rplibs.rpSBML
-   rplibs.stats
+   Args
+   cobra_format
+   inchikeyMIRIAM
+   rpCompound
+   rpGraph
+   rpObject
+   rpPathway
+   rpReaction
+   rpSBML
+   stats
 
 

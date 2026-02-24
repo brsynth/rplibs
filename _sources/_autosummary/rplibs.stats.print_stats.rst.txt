@@ -1,0 +1,6 @@
+rplibs.stats.print\_stats
+=========================
+
+.. currentmodule:: rplibs.stats
+
+.. autofunction:: print_stats
