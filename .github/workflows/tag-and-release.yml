@@ -1,0 +1,38 @@
+name: Tag and Publish Release
+
+on:
+  push:
+    branches:
+      - stable
+
+jobs:
+  publish:
+    if: startsWith(github.event.head_commit.message, 'chore(release):')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version
+        id: get_version
+        run: |
+          VERSION=$(grep __version__ -R . | head -n1 | cut -d '"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+          git tag v${{ steps.get_version.outputs.version }}
+          git push origin v${{ steps.get_version.outputs.version }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: Release v${{ steps.get_version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
