@@ -1,4 +1,5 @@
 """A class to represent a chemical species."""
+
 # The MIT License (MIT)
 #
 # Copyright (c) 2018 Institute for Molecular Systems Biology, ETH Zurich.
@@ -23,15 +24,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from typing import (
-    Dict,
-    TypeVar
-)
-from logging import (
-    Logger,
-    getLogger
-)
-from copy import deepcopy
+from typing import Dict, TypeVar
+from logging import Logger, getLogger
 from chemlite import Compound
 from rplibs.rpObject import rpObject
 
@@ -41,19 +35,19 @@ class rpCompound(Compound, rpObject):
     enriched with FBA and thermodynamics informations.
     """
 
-    __thermo_str = 'standard_dg_formation'
-    __fba_str = 'shadow_price'
+    __thermo_str = "standard_dg_formation"
+    __fba_str = "shadow_price"
 
     def __init__(
         self,
         id: str,
-        smiles: str = '',
-        inchi: str = '',
-        inchikey: str = '',
-        formula: str = '',
-        name: str = '',
-        compartment_id: str = 'c',
-        logger: Logger = getLogger(__name__)
+        smiles: str = "",
+        inchi: str = "",
+        inchikey: str = "",
+        formula: str = "",
+        name: str = "",
+        compartment_id: str = "c",
+        logger: Logger = getLogger(__name__),
     ):
         """Create a rpCompound object with default settings.
 
@@ -76,15 +70,12 @@ class rpCompound(Compound, rpObject):
             inchikey=inchikey,
             formula=formula,
             name=name,
-            logger=logger
+            logger=logger,
         )
         rpObject.__init__(self)
         self.set_compartment(compartment_id)
 
-    def _to_dict(
-        self,
-        full: bool = True
-    ) -> Dict:
+    def _to_dict(self, full: bool = True) -> Dict:
         """Get attributes as a dictionary.
 
         Parameters
@@ -98,13 +89,10 @@ class rpCompound(Compound, rpObject):
             return {
                 **Compound._to_dict(self),
                 **rpObject._to_dict(self),
-                **self.__to_dict()
+                **self.__to_dict(),
             }
         else:
-            return {
-                **self.__to_dict(),
-                **rpObject._to_dict(self)
-            }
+            return {**self.__to_dict(), **rpObject._to_dict(self)}
 
     def __to_dict(self) -> Dict:
         """Returns a dictionary which contains attributes
@@ -123,19 +111,19 @@ class rpCompound(Compound, rpObject):
 
     def get_fba_biomass_shadow_price(self) -> TypeVar:
         """Get flux shadow price during biomass production."""
-        return self.get_fba_info(f'biomass_{rpCompound.__fba_str}')
+        return self.get_fba_info(f"biomass_{rpCompound.__fba_str}")
 
     def get_fba_fraction_shadow_price(self) -> TypeVar:
         """Get flux shadow price during fraction of reaction analysis."""
-        return self.get_fba_info(f'fraction_{rpCompound.__fba_str}')
+        return self.get_fba_info(f"fraction_{rpCompound.__fba_str}")
 
     def get_fba_fba_shadow_price(self) -> TypeVar:
         """Get flux shadow price during balance analysis."""
-        return self.get_fba_info(f'fba_{rpCompound.__fba_str}')
+        return self.get_fba_info(f"fba_{rpCompound.__fba_str}")
 
     def get_fba_pfba_shadow_price(self) -> TypeVar:
         """Get flux shadow price during parcimonious balance analysis."""
-        return self.get_fba_info(f'pfba_{rpCompound.__fba_str}')
+        return self.get_fba_info(f"pfba_{rpCompound.__fba_str}")
 
     def get_compartment(self) -> str:
         """Get compound compartment ID."""
@@ -143,7 +131,7 @@ class rpCompound(Compound, rpObject):
 
     def set_thermo_standard_dg_formation(self, value: float) -> None:
         """Set dG formation cost.
-        
+
         Parameters
         ----------
         value: float
@@ -152,43 +140,43 @@ class rpCompound(Compound, rpObject):
 
     def set_fba_biomass_shadow_price(self, value: float) -> None:
         """Set flux shadow price during biomass production.
-        
+
         Parameters
         ----------
         value: float
         """
-        self.add_fba_info(f'biomass_{rpCompound.__fba_str}', value)
+        self.add_fba_info(f"biomass_{rpCompound.__fba_str}", value)
 
     def set_fba_fraction_shadow_price(self, value: float) -> None:
         """Set flux shadow price during fraction of reaction analysis.
-        
+
         Parameters
         ----------
         value: float
         """
-        self.add_fba_info(f'fraction_{rpCompound.__fba_str}', value)
+        self.add_fba_info(f"fraction_{rpCompound.__fba_str}", value)
 
     def set_fba_fba_shadow_price(self, value: float) -> None:
         """Set flux shadow price during balance analysis..
-        
+
         Parameters
         ----------
         value: float
         """
-        self.add_fba_info(f'fba_{rpCompound.__fba_str}', value)
+        self.add_fba_info(f"fba_{rpCompound.__fba_str}", value)
 
     def set_fba_pfba_shadow_price(self, value: float) -> None:
         """Set flux shadow price during parcimonious balance analysis.
-        
+
         Parameters
         ----------
         value: float
         """
-        self.add_fba_info(f'pfba_{rpCompound.__fba_str}', value)
+        self.add_fba_info(f"pfba_{rpCompound.__fba_str}", value)
 
     def set_compartment(self, compartment: str) -> None:
         """Set compartment ID of the compound.
-        
+
         Parameters
         ----------
         compartment: str
@@ -197,23 +185,23 @@ class rpCompound(Compound, rpObject):
 
     @staticmethod
     def from_compound(
-        compound:Compound,
-        compartment_id:str='c',
-        logger: Logger = getLogger(__name__)
-    ) -> 'rpCompound':
-        '''Create a rpCompound object from a Compound object
-        
+        compound: Compound,
+        compartment_id: str = "c",
+        logger: Logger = getLogger(__name__),
+    ) -> "rpCompound":
+        """Create a rpCompound object from a Compound object
+
         :param compound: A Compound object
         :param compartment_id: A compartment id (Default: 'c')
         :param logger: A logging object (Default: create one)
-        
+
         :type compound: Compound
         :type compartment_id: str
         :type logger: logging
 
         :return: An rpCompound object
         :rtype: rpCompound
-        '''
+        """
         return rpCompound(
             id=compound.get_id(),
             smiles=compound.get_smiles(),
@@ -222,5 +210,5 @@ class rpCompound(Compound, rpObject):
             formula=compound.get_formula(),
             name=compound.get_name(),
             compartment_id=compartment_id,
-            logger=logger
+            logger=logger,
         )

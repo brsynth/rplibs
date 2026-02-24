@@ -1,4 +1,5 @@
 """A class to represent a chemical reaction."""
+
 # The MIT License (MIT)
 #
 # Copyright (c) 2018 Institute for Molecular Systems Biology, ETH Zurich.
@@ -23,20 +24,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from typing import (
-    Dict,
-    List,
-    Union,
-    TypeVar
-)
+from typing import Dict, List, Union, TypeVar, Tuple
 from copy import deepcopy
-from logging import (
-    Logger,
-    getLogger
-)
-from math import isnan
+from logging import Logger, getLogger
 from chemlite import Reaction
-from .rpObject import rpObject
+from rplibs.rpObject import rpObject
 
 
 class rpReaction(Reaction, rpObject):
@@ -47,20 +39,64 @@ class rpReaction(Reaction, rpObject):
 
     __default_fbc_lower = -10000
     __default_fbc_upper = 10000
-    __default_fbc_units = 'mmol_per_gDW_per_hr'
-    __selenzy_prefix = 'selenzy'
+    __default_fbc_units = "mmol_per_gDW_per_hr"
+    __selenzy_prefix = "selenzy"
 
     @staticmethod
-    def get_selenzy_prefix() -> str: return rpReaction.__selenzy_prefix
+    def get_selenzy_prefix() -> str:
+        return rpReaction.__selenzy_prefix
+
     @staticmethod
     def get_default_fbc_units() -> str:
         return rpReaction.__default_fbc_units
+
     @staticmethod
     def get_default_fbc_lower() -> float:
         return rpReaction.__default_fbc_lower
+
     @staticmethod
     def get_default_fbc_upper() -> float:
         return rpReaction.__default_fbc_upper
+
+    @staticmethod
+    def build(
+        rxn_id: str, infos: Dict, logger: Logger = getLogger(__name__)
+    ) -> Tuple["rpReaction", Union[str, None]]:
+        # Extract EC numbers from miriam
+        ec_numbers = []
+        for info in infos["miriam"]:
+            if "ec-code" in info:
+                ec_numbers.append(info.split("/")[-1])
+        reaction = rpReaction(
+            id=rxn_id,
+            ec_numbers=ec_numbers,
+            reactants=infos["left"],
+            products=infos["right"],
+            lower_flux_bound=infos["fbc_lower_value"],
+            upper_flux_bound=infos["fbc_upper_value"],
+            flux_bound_units=infos["fbc_units"],
+            reversible=infos["reversible"],
+            miriam=infos["miriam"],
+            logger=logger,
+        )
+        # Add additional infos
+        write_to(infos["brsynth"], reaction)
+        # Detects if the current reaction produces the target
+        target_id = [
+            spe_id for spe_id in reaction.get_products_ids() if "TARGET" in spe_id
+        ]
+        if target_id != []:
+            target_id = target_id[0]
+        else:
+            # If not, detects if the current reaction consumes the target
+            target_id = [
+                spe_id for spe_id in reaction.get_reactants_ids() if "TARGET" in spe_id
+            ]
+            if target_id != []:
+                target_id = target_id[0]
+            else:
+                target_id = None
+        return reaction, target_id
 
     def __init__(
         self,
@@ -74,7 +110,7 @@ class rpReaction(Reaction, rpObject):
         flux_bound_units: str = __default_fbc_units,
         reversible: bool = False,
         miriam: Dict = {},
-        logger: Logger = getLogger(__name__)
+        logger: Logger = getLogger(__name__),
     ):
         """Create a rpReaction object with default settings.
 
@@ -103,26 +139,24 @@ class rpReaction(Reaction, rpObject):
             Extended informations as cross references
         logger : Logger, optional
         """
-        if 'ec-code' in miriam:
-            ec_numbers = miriam['ec-code']
+        if "ec-code" in miriam:
+            ec_numbers = miriam["ec-code"]
         Reaction.__init__(
             self,
             id=id,
             ec_numbers=ec_numbers,
             reactants=reactants,
             products=products,
-            logger=logger
+            logger=logger,
         )
         rpObject.__init__(self)
         self.set_rp2_transfo_id(None)
         self.set_rule_ids([])
         self.set_tmpl_rxn_ids([])
-        self.set_rule_score('NaN')
+        self.set_rule_score("NaN")
         self.set_idx_in_path(idx_in_path)
         self.set_fbc(
-            l_bound=lower_flux_bound,
-            u_bound=upper_flux_bound,
-            units=flux_bound_units
+            l_bound=lower_flux_bound, u_bound=upper_flux_bound, units=flux_bound_units
         )
         self.set_selenzy({})
         self.set_reversible(reversible)
@@ -132,10 +166,7 @@ class rpReaction(Reaction, rpObject):
     # def __repr__(self):
     #     return f'Reaction {self.get_name()}'
 
-    def _to_dict(
-        self,
-        full: bool = True
-    ) -> Dict:
+    def _to_dict(self, full: bool = True) -> Dict:
         """Get attributes as a dictionary.
 
         Parameters
@@ -149,30 +180,25 @@ class rpReaction(Reaction, rpObject):
             return {
                 **Reaction._to_dict(self, full),
                 **rpObject._to_dict(self),
-                **self.__to_dict()
+                **self.__to_dict(),
             }
         else:
-            return {
-                **self.__to_dict(),
-                **rpObject._to_dict(self)
-            }
+            return {**self.__to_dict(), **rpObject._to_dict(self)}
 
     def __to_dict(self) -> Dict:
         """Returns a dictionary which contains attributes
         only from rpReaction class excluding inherited ones."""
         selenzy_infos = {
-            rpObject.get_sep().join([
-                rpReaction.__selenzy_prefix,
-                k
-            ]):v for k,v in self.get_selenzy().items()
+            rpObject.get_sep().join([rpReaction.__selenzy_prefix, k]): v
+            for k, v in self.get_selenzy().items()
         }
         return {
-            'rp2_transfo_id': self.get_rp2_transfo_id(),
-            'rule_ids': self.get_rule_ids(),
-            'tmpl_rxn_ids': self.get_tmpl_rxn_ids(),
-            'rule_score': self.get_rule_score(),
-            'idx_in_path': self.get_idx_in_path(),
-            **selenzy_infos
+            "rp2_transfo_id": self.get_rp2_transfo_id(),
+            "rule_ids": self.get_rule_ids(),
+            "tmpl_rxn_ids": self.get_tmpl_rxn_ids(),
+            "rule_score": self.get_rule_score(),
+            "idx_in_path": self.get_idx_in_path(),
+            **selenzy_infos,
             # 'fbc': deepcopy(self.get_fbc())
         }
 
@@ -181,14 +207,16 @@ class rpReaction(Reaction, rpObject):
         if not isinstance(self, other.__class__):
             return False
         # Compare with some specific keys
-        return all(
-            self._to_dict().get(key) == other._to_dict().get(key)
-            for key in [
-                'ec_numbers',
-                'reactants',
-                'products'
-            ]
-        )
+        for key in ["ec_numbers", "reactants", "products"]:
+            obj_1 = self._to_dict().get(key)
+            obj_2 = other._to_dict().get(key)
+            # if objects are of type list, sort them
+            if isinstance(obj_1, list):
+                if sorted(obj_1) != sorted(obj_2):
+                    return False
+            elif self._to_dict().get(key) != other._to_dict().get(key):
+                return False
+        return True
 
     ## READ METHODS
     def get_rp2_transfo_id(self) -> str:
@@ -215,7 +243,7 @@ class rpReaction(Reaction, rpObject):
     def get_idx_in_path(self) -> int:
         """Get the index of the reaction within the metabolic pathway."""
         return self.__idx_in_path
-    
+
     # def get_fbc(self) -> float:
     #     return self.__fbc
 
@@ -249,7 +277,7 @@ class rpReaction(Reaction, rpObject):
 
     def get_selenzy_infos_fromID(self, id: str) -> float:
         """Get selenzyme infos for a specific UniProtID.
-        
+
         Parameters
         ----------
         id: str,
@@ -261,7 +289,7 @@ class rpReaction(Reaction, rpObject):
     def set_rp2_transfo_id(self, id: str) -> None:
         """Set the ID of chemical transformation that
         the current reaction has been generated from.
-        
+
         Parameters
         ----------
         id: str
@@ -272,7 +300,7 @@ class rpReaction(Reaction, rpObject):
         """Set the IDs of reaction rule that
         the chemical transformation of the
         current reaction has been generated from.
-        
+
         Parameters
         ----------
         id: List[str]
@@ -285,7 +313,7 @@ class rpReaction(Reaction, rpObject):
         """Add the ID of the reaction rule that
         the chemical transformation of the
         current reaction has been generated from.
-        
+
         Parameters
         ----------
         id: str
@@ -296,7 +324,7 @@ class rpReaction(Reaction, rpObject):
         """Set the IDs of the template (original) reactions
         that the reaction rule of the current reaction
         has been generated from.
-        
+
         Parameters
         ----------
         id: List[str]
@@ -309,7 +337,7 @@ class rpReaction(Reaction, rpObject):
         """Add the ID of the template (original) reaction
         that the reaction rule of the current reaction
         has been generated from.
-        
+
         Parameters
         ----------
         id: str
@@ -320,7 +348,7 @@ class rpReaction(Reaction, rpObject):
         """Set the score of the reaction rule of
         the chemical transformation of
         the current reaction has been generated from.
-        
+
         Parameters
         ----------
         score: float
@@ -330,7 +358,7 @@ class rpReaction(Reaction, rpObject):
     def set_idx_in_path(self, index: int) -> None:
         """Set the position of the reaction within
         the metabolic pathway.
-        
+
         Parameters
         ----------
         index: int
@@ -339,7 +367,7 @@ class rpReaction(Reaction, rpObject):
 
     def set_fbc_lower(self, bound: float) -> None:
         """Set the lower flux bound.
-        
+
         Parameters
         ----------
         bound: float
@@ -348,7 +376,7 @@ class rpReaction(Reaction, rpObject):
 
     def set_fbc_upper(self, bound: float) -> None:
         """Set the upper flux bound.
-        
+
         Parameters
         ----------
         bound: float
@@ -357,7 +385,7 @@ class rpReaction(Reaction, rpObject):
 
     def set_fbc_units(self, units: str) -> None:
         """Set the flux bounds units.
-        
+
         Parameters
         ----------
         units: str
@@ -365,13 +393,10 @@ class rpReaction(Reaction, rpObject):
         self.__fbc_units = units
 
     def set_fbc(
-        self,
-        l_bound: float,
-        u_bound: float,
-        units: str = __default_fbc_units
+        self, l_bound: float, u_bound: float, units: str = __default_fbc_units
     ) -> None:
         """Set flux bound constraints.
-        
+
         Parameters
         ----------
         l_bound: float
@@ -388,17 +413,14 @@ class rpReaction(Reaction, rpObject):
 
     def set_reversible(self, reversible: bool) -> None:
         """Set the reversibility of the reaction.
-        
+
         Parameters
         ----------
         reversible: bool
         """
         self.__reversible = reversible
 
-    def set_selenzy(
-        self,
-        infos: Dict
-    ) -> None:
+    def set_selenzy(self, infos: Dict) -> None:
         """Same as set_selenzy_infos()."""
         self.set_selenzy_infos(infos)
 
@@ -407,7 +429,7 @@ class rpReaction(Reaction, rpObject):
         infos: Dict,
     ) -> None:
         """Set the selenzyme infos.
-        
+
         Parameters
         ----------
         infos: Dict
@@ -418,18 +440,11 @@ class rpReaction(Reaction, rpObject):
         """
         self.__selenzy = {}
         for uniprot_id, _infos in infos.items():
-            self.add_selenzy_info(
-                id=uniprot_id,
-                infos=_infos
-            )
+            self.add_selenzy_info(id=uniprot_id, infos=_infos)
 
-    def add_selenzy_info(
-        self,
-        id: str,
-        infos: Dict
-    ) -> None:
+    def add_selenzy_info(self, id: str, infos: Dict) -> None:
         """Add selenzyme infos.
-        
+
         Parameters
         ----------
         id: str
@@ -441,7 +456,7 @@ class rpReaction(Reaction, rpObject):
 
     def set_miriam(self, miriam: Dict) -> None:
         """Set extended informations as cross references.
-        
+
         Parameters
         ----------
         miriam: Dict
@@ -451,7 +466,7 @@ class rpReaction(Reaction, rpObject):
 
     def add_miriam(self, key: str, infos: TypeVar) -> None:
         """Add an extended information.
-        
+
         Parameters
         ----------
         key: str
@@ -460,3 +475,23 @@ class rpReaction(Reaction, rpObject):
             Extended informations to add
         """
         self.__miriam[key] = deepcopy(infos)
+
+
+def write_to(data: Dict, object: TypeVar) -> None:
+    # Detect fba and thermo infos
+    for key, value in data.items():
+        if value == "None":
+            value = None
+        elif str(value) == "nan":
+            value = "NaN"
+        if isinstance(value, dict):
+            keyword = key.split(rpObject.get_sep())[0]
+            offset = len(keyword) + len(rpObject.get_sep())
+            getattr(object, "add_" + keyword.replace("rp_", "") + "_info")(
+                key[offset:], value
+            )
+        else:
+            try:
+                getattr(object, "set_" + key.replace("rp_", ""))(value)
+            except AttributeError:
+                pass

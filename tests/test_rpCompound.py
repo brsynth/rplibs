@@ -11,14 +11,14 @@ from rplibs.rpCompound import rpCompound
 
 class Test_rpCompound(TestCase):
 
-    __id = 'test'
+    __id = "test"
     __dict = {
-        'id': __id,
-        'name': '',
-        'smiles': '',
-        'inchi': '',
-        'inchikey': '',
-        'formula': ''
+        "id": __id,
+        "name": "",
+        "smiles": "",
+        "inchi": "",
+        "inchikey": "",
+        "formula": "",
     }
     __dg = 1.0
     __biomass = 2.0
@@ -27,7 +27,7 @@ class Test_rpCompound(TestCase):
     __pfba = 5.0
 
     def setUp(self):
-        self.rpcompound_empty = rpCompound(id=f'{self.__id}_empty')
+        self.rpcompound_empty = rpCompound(id=f"{self.__id}_empty")
         self.rpcompound = rpCompound(id=self.__id)
         self.rpcompound.set_thermo_standard_dg_formation(self.__dg)
         self.rpcompound.set_fba_biomass_shadow_price(self.__biomass)
@@ -36,55 +36,48 @@ class Test_rpCompound(TestCase):
         self.rpcompound.set_fba_pfba_shadow_price(self.__pfba)
 
     def test__to_dict_empty(self):
-        self.__dict['id'] = f'{self.__id}_empty'
-        self.assertDictEqual(
-            self.rpcompound_empty._to_dict(),
-            self.__dict
-        )
+        self.__dict["id"] = f"{self.__id}_empty"
+        self.assertDictEqual(self.rpcompound_empty._to_dict(), self.__dict)
 
     def test__to_dict(self):
         self.assertDictEqual(
             self.rpcompound._to_dict(),
-            {
-                **self.__dict,
-                **self.rpcompound._to_dict(full=False)
-            }
+            {**self.__dict, **self.rpcompound._to_dict(full=False)},
         )
 
     def test_get_thermo_attr(self):
         attrs = [
-            'standard_dg_formation',
+            "standard_dg_formation",
         ]
         for attr in attrs:
-            with self.subTest(f'Testing get/set thermo_{attr}()', attr=attr):
-                getattr(self.rpcompound_empty, f'set_thermo_{attr}')(self.__dg)
+            with self.subTest(f"Testing get/set thermo_{attr}()", attr=attr):
+                getattr(self.rpcompound_empty, f"set_thermo_{attr}")(self.__dg)
                 self.assertEqual(
-                    getattr(self.rpcompound_empty, f'get_thermo_{attr}')(),
-                    self.__dg
+                    getattr(self.rpcompound_empty, f"get_thermo_{attr}")(), self.__dg
                 )
 
     def test_get_fba_attr(self):
         attrs = [
-            'biomass',
-            'fraction',
-            'fba',
-            'pfba',
+            "biomass",
+            "fraction",
+            "fba",
+            "pfba",
         ]
         for attr in attrs:
-            with self.subTest(f'Testing get/set fba_{attr}_shadow_price()', attr=attr):
-                getattr(self.rpcompound_empty, f'set_fba_{attr}_shadow_price')(self.__biomass)
-                self.assertEqual(
-                    getattr(self.rpcompound_empty, f'get_fba_{attr}_shadow_price')(),
+            with self.subTest(f"Testing get/set fba_{attr}_shadow_price()", attr=attr):
+                getattr(self.rpcompound_empty, f"set_fba_{attr}_shadow_price")(
                     self.__biomass
+                )
+                self.assertEqual(
+                    getattr(self.rpcompound_empty, f"get_fba_{attr}_shadow_price")(),
+                    self.__biomass,
                 )
 
     def test_compartment(self):
-        comp_id = 'COMP_ID'
+        comp_id = "COMP_ID"
         self.rpcompound_empty.set_compartment(comp_id)
-        self.assertEqual(
-            self.rpcompound_empty.get_compartment(),
-            comp_id
-        )    
+        self.assertEqual(self.rpcompound_empty.get_compartment(), comp_id)
+
     def test_from_compound(self):
         # Load.
         cid = "MNXM23"
@@ -99,27 +92,15 @@ class Test_rpCompound(TestCase):
             inchi=inchi,
             inchikey=inchikey,
             name=name,
-            formula=formula
+            formula=formula,
         )
-        rp_compound = rpCompound.from_compound(
-            compound=compound
-        )
+        rp_compound = rpCompound.from_compound(compound=compound)
         # Return type.
-        self.assertIsInstance(
-            rp_compound,
-            rpCompound
-        )
+        self.assertIsInstance(rp_compound, rpCompound)
         # Challenge - 1
         self.assertEqual(
-            compound._Compound__to_dict(),
-            rp_compound._Compound__to_dict()
+            compound._Compound__to_dict(), rp_compound._Compound__to_dict()
         )
         # Challenge - 2
-        rp_compound = rpCompound.from_compound(
-            compound=compound,
-            compartment_id='e'
-        )
-        self.assertEqual(
-            rp_compound.get_compartment(),
-            'e'
-        )
+        rp_compound = rpCompound.from_compound(compound=compound, compartment_id="e")
+        self.assertEqual(rp_compound.get_compartment(), "e")
