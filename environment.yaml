@@ -2,7 +2,7 @@ name: rplibs
 channels:
   - conda-forge
 dependencies:
-  - python
+  - python=3.14.2
   - numpy
   - pandas
   - networkx >=2.5

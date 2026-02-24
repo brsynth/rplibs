@@ -16,12 +16,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.11"
+          activate-environment: ci-env
+          environment-file: environment.yaml
+          auto-activate-base: false
+          use-mamba: true
+          mamba-version: "*"
 
-      - run: python -m pip install --upgrade pip
-      - run: pip install -r requirements.txt
-      - run: pip install pytest
+      - run: conda env update -f environment-dev.yml
 
-      - run: pytest
+      - name: Run tests
+        shell: bash -l {0}
+        run: pytest
