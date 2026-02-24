@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  create-pr:
+  pr:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -17,13 +17,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create Pull Request to stable
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: auto/main-to-stable
-          base: stable
-          title: "Sync main → stable"
-          body: "Automated PR created after push to main."
-          commit-message: "chore(sync): main → stable"
-          delete-branch: true
+      - name: Create PR
+        run: |
+          gh pr create \
+            --base stable \
+            --head main \
+            --title "Sync main → stable" \
+            --body "Automated PR after push to main"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
