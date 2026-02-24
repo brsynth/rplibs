@@ -64,10 +64,6 @@ class rpObject:
         logger : Logger, optional
         """
 
-    ## OUT METHODS
-    # def __repr__(self):
-    #     return f'Compound {self.get_id()}'
-
     def _to_dict(self) -> Dict:
         """Get attributes as a dictionary.
         Implemented for compatibility with inherited classes."""
