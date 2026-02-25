@@ -12,6 +12,10 @@ def to_cobra(string: str) -> str:
     return string.replace(at_pattern, "@")
 
 
+def from_cobra(string: str) -> str:
+    return string.replace('@', at_pattern)
+
+
 def cobra_suffix(comp_id: str) -> str:
     return at_pattern + comp_id
 

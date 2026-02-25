@@ -1,7 +1,6 @@
 # coding: utf-8
 from setuptools import setup, find_packages
 from os import path as os_path
-from rplibs._version import __version__
 
 ## INFOS ##
 package = "rplibs"
@@ -19,9 +18,27 @@ with open(
     long_description = f.read()
 
 
+def get_version():
+    with open(
+        os_path.join(
+            os_path.dirname(os_path.realpath(__file__)),
+            package,
+            "_version.py"
+        ), "r"
+    ) as f:
+        lines = f.readlines()
+    for line in lines:
+        if line.startswith("##"):
+            from re import search
+
+            m = search("\[(.+)\]", line)
+            if m:
+                return m.group(1)
+
+
 setup(
     name=package,
-    version=__version__,
+    version=get_version(),
     author=authors,
     author_email=corr_author,
     description=descr,
