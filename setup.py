@@ -21,10 +21,9 @@ with open(
 def get_version():
     with open(
         os_path.join(
-            os_path.dirname(os_path.realpath(__file__)),
-            package,
-            "_version.py"
-        ), "r"
+            os_path.dirname(os_path.realpath(__file__)), package, "_version.py"
+        ),
+        "r",
     ) as f:
         lines = f.readlines()
     for line in lines:
