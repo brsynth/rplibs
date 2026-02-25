@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - stable
-
+  workflow_dispatch:
+    
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -34,7 +35,7 @@ jobs:
       - name: Extract version
         id: get_version
         run: |
-          VERSION=$(grep __version__ -R . | head -n1 | cut -d '"' -f2)
+          VERSION=$(sed -n 's/^__version__[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' rplibs/_version.py)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Update CHANGELOG.md
