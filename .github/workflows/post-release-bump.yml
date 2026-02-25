@@ -1,0 +1,61 @@
+name: Post Release Version Bump
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Extract released version
+        id: released
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "released=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Compute next dev version
+        id: next
+        run: |
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${{ steps.released.outputs.released }}"
+          PATCH=$((PATCH + 1))
+          NEXT="$MAJOR.$MINOR.$PATCH.dev0"
+          echo "next=$NEXT" >> $GITHUB_OUTPUT
+
+      - name: Update _version.py
+        run: |
+          sed -i "s/^__version__.*/__version__ = \"${{ steps.next.outputs.next }}\"/" rplibs/_version.py
+
+      - name: Prepend CHANGELOG entry
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          echo -e "## ${{ steps.next.outputs.next }} - $DATE\n\n- Development version\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
+
+      - name: Create PR to main
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: bump-dev-version
+          base: main
+          title: "chore: bump version to ${{ steps.next.outputs.next }}"
+          body: "Automatic post-release development version bump"
+          delete-branch: true
+
+      - name: Enable auto-merge
+        if: steps.cpr.outputs.pull-request-number != ''
+        run: |
+            gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --auto --merge
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
