@@ -11,6 +11,8 @@ on:
 
 jobs:
   lint:
+    if: github.head_ref != 'stable'
+    # if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:
