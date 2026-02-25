@@ -1,5 +1,3 @@
-"""A class to represent a chemical species."""
-
 # The MIT License (MIT)
 #
 # Copyright (c) 2018 Institute for Molecular Systems Biology, ETH Zurich.
@@ -65,10 +63,6 @@ class rpObject:
         ----------
         logger : Logger, optional
         """
-
-    ## OUT METHODS
-    # def __repr__(self):
-    #     return f'Compound {self.get_id()}'
 
     def _to_dict(self) -> Dict:
         """Get attributes as a dictionary.

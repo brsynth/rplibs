@@ -1,0 +1,53 @@
+name: Create CHANGELOG PR
+
+on:
+  push:
+    branches:
+      - stable
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect version change
+        id: check
+        run: |
+          if git diff HEAD^ HEAD --name-only | grep -q "_version.py"; then
+            echo "release=true" >> $GITHUB_OUTPUT
+          else
+            echo "release=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Stop if not release
+        if: steps.check.outputs.release != 'true'
+        run: exit 0
+
+      - name: Extract version
+        id: get_version
+        run: |
+          VERSION=$(grep __version__ -R . | head -n1 | cut -d '"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update CHANGELOG.md
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+          VERSION=${{ steps.get_version.outputs.version }}
+          echo -e "## [$VERSION] - $DATE\n\n- Release $VERSION\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
+
+      - name: Create PR for changelog
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: release/${{ steps.get_version.outputs.version }}
+          base: stable
+          title: "Release ${{ steps.get_version.outputs.version }}"
+          commit-message: "chore(release): update CHANGELOG"
