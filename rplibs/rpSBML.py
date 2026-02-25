@@ -6,7 +6,6 @@ from copy import deepcopy
 from filetype import guess
 from hashlib import sha256
 
-# from math import isnan
 from pandas import DataFrame as pd_DataFrame, concat as pd_concat
 
 from os import path as os_path, remove
