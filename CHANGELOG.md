@@ -1,20 +1,50 @@
 # Changelog
 
+## [6.8.3](https://github.com/brsynth/rplibs/tree/6.8.3) (2026-02-25)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/6.8.2...6.8.3)
+
 ## [6.8.2](https://github.com/brsynth/rplibs/tree/6.8.2) (2026-02-25)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/v6.8.1...6.8.2)
+
+**Merged pull requests:**
+
+- Main [\#16](https://github.com/brsynth/rplibs/pull/16) ([breakthewall](https://github.com/breakthewall))
 
 ## [v6.8.1](https://github.com/brsynth/rplibs/tree/v6.8.1) (2026-02-25)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/v1.0.2...v6.8.1)
 
+**Merged pull requests:**
+
+- Main [\#15](https://github.com/brsynth/rplibs/pull/15) ([breakthewall](https://github.com/breakthewall))
+- Release 6.8.1 [\#14](https://github.com/brsynth/rplibs/pull/14) ([github-actions[bot]](https://github.com/apps/github-actions))
+- Main [\#13](https://github.com/brsynth/rplibs/pull/13) ([breakthewall](https://github.com/breakthewall))
+- Release 6.8.1 [\#12](https://github.com/brsynth/rplibs/pull/12) ([github-actions[bot]](https://github.com/apps/github-actions))
+- Main [\#11](https://github.com/brsynth/rplibs/pull/11) ([breakthewall](https://github.com/breakthewall))
+- Release 6.8.1 [\#10](https://github.com/brsynth/rplibs/pull/10) ([github-actions[bot]](https://github.com/apps/github-actions))
+- Main [\#9](https://github.com/brsynth/rplibs/pull/9) ([breakthewall](https://github.com/breakthewall))
+- Release 6.8.1 [\#7](https://github.com/brsynth/rplibs/pull/7) ([github-actions[bot]](https://github.com/apps/github-actions))
+- Release 6.8.1 [\#5](https://github.com/brsynth/rplibs/pull/5) ([github-actions[bot]](https://github.com/apps/github-actions))
+- Main [\#4](https://github.com/brsynth/rplibs/pull/4) ([breakthewall](https://github.com/breakthewall))
+- Main [\#3](https://github.com/brsynth/rplibs/pull/3) ([breakthewall](https://github.com/breakthewall))
+
 ## [v1.0.2](https://github.com/brsynth/rplibs/tree/v1.0.2) (2026-02-24)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/1.0.1...v1.0.2)
 
+**Merged pull requests:**
+
+- Sync main → stable [\#2](https://github.com/brsynth/rplibs/pull/2) ([github-actions[bot]](https://github.com/apps/github-actions))
+
 ## [1.0.1](https://github.com/brsynth/rplibs/tree/1.0.1) (2026-02-24)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/1.0.0...1.0.1)
+
+**Merged pull requests:**
+
+- Main [\#1](https://github.com/brsynth/rplibs/pull/1) ([breakthewall](https://github.com/breakthewall))
 
 ## [1.0.0](https://github.com/brsynth/rplibs/tree/1.0.0) (2022-04-28)
 
