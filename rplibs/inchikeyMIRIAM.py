@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from rr_cache import rrCache
 from rplibs import rpSBML
 from libsbml import writeSBMLToFile
