@@ -1,0 +1,6 @@
+rplibs.cobra\_format.from\_cobra
+================================
+
+.. currentmodule:: rplibs.cobra_format
+
+.. autofunction:: from_cobra

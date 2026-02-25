@@ -17,6 +17,7 @@ rplibs.cobra\_format
    
       cobra_suffix
       cobraize
+      from_cobra
       to_cobra
       uncobraize
       uncobraize_results
