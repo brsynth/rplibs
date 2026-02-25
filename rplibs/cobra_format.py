@@ -5,6 +5,7 @@ from copy import deepcopy
 at_pattern = "__64__"
 bigg_prefix = "M_"
 
+
 def to_cobra(string: str) -> str:
     if string.startswith(bigg_prefix):
         string = string[len(bigg_prefix) :]
