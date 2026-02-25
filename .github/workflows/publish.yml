@@ -52,13 +52,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Open PR stable → main
+      - name: Sync stable → main
+        id: ssm
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: stable
+          title: "Sync stable → main"
+          body: "Automated sync after release"
+
+      - name: Enable auto-merge
+        if: steps.ssm.outputs.pull-request-number != ''
         run: |
-          gh pr create \
-            --base main \
-            --head stable \
-            --title "Sync stable → main" \
-            --body "Automated sync after release" \
-          || echo "PR may already exist"
+            gh pr merge ${{ steps.ssm.outputs.pull-request-number }} --auto --merge
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
