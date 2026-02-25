@@ -14,6 +14,10 @@
 
 - Release 6.8.1
 
+## [6.8.1] - 2026-02-25
+
+- Release 6.8.1
+
 # Changelog
 
 ## [1.0.0](https://github.com/brsynth/rplibs/tree/1.0.0) (2022-04-28)
