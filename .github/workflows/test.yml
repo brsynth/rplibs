@@ -11,6 +11,8 @@ on:
 
 jobs:
   test:
+    if: github.head_ref != 'stable'
+    # if: github.actor != 'github-actions[bot]'
     name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
