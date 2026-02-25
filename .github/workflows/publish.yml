@@ -1,4 +1,4 @@
-name: Publish Release
+name: Publish
 
 on:
   push:
@@ -6,72 +6,40 @@ on:
       - stable
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Extract version
-        id: get_version
+      - name: Get version
+        id: version
         run: |
           VERSION=$(sed -n 's/^__version__[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' rplibs/_version.py)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Check if tag exists
-        id: tagcheck
+      - name: Create tag if missing
         run: |
-          if git rev-parse "v${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "Tag exists. Skipping."
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
+            git tag v${{ steps.version.outputs.version }}
+            git push origin v${{ steps.version.outputs.version }}
           fi
-
-      - name: Stop if tag exists
-        if: steps.tagcheck.outputs.exists == 'true'
-        run: exit 0
-
-      - name: Create tag
-        run: |
-          git tag v${{ steps.get_version.outputs.version }}
-          git push origin v${{ steps.get_version.outputs.version }}
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          release_name: Release v${{ steps.get_version.outputs.version }}
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: Release v${{ steps.version.outputs.version }}
           body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout stable
-        uses: actions/checkout@v4
-        with:
-          ref: stable
-          fetch-depth: 0
-    
-      - name: Sync stable → main
-        id: sync
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: sync-stable-to-main
-          title: "Sync stable → main"
-          body: "Automated sync after release"
-          delete-branch: true
-
-      - name: Enable auto-merge
-        if: steps.sync.outputs.pull-request-number != ''
-        run: |
-            gh pr merge ${{ steps.sync.outputs.pull-request-number }} --auto --merge
-        env:
-            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
