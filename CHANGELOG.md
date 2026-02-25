@@ -1,24 +1,20 @@
-## [6.8.1] - 2026-02-25
-
-- Release 6.8.1
-
-## [6.8.1] - 2026-02-25
-
-- Release 6.8.1
-
-## [6.8.1] - 2026-02-25
-
-- Release 6.8.1
-
-## [6.8.1] - 2026-02-25
-
-- Release 6.8.1
-
-## [6.8.1] - 2026-02-25
-
-- Release 6.8.1
-
 # Changelog
+
+## [6.8.2](https://github.com/brsynth/rplibs/tree/6.8.2) (2026-02-25)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/v6.8.1...6.8.2)
+
+## [v6.8.1](https://github.com/brsynth/rplibs/tree/v6.8.1) (2026-02-25)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/v1.0.2...v6.8.1)
+
+## [v1.0.2](https://github.com/brsynth/rplibs/tree/v1.0.2) (2026-02-24)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/1.0.1...v1.0.2)
+
+## [1.0.1](https://github.com/brsynth/rplibs/tree/1.0.1) (2026-02-24)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/1.0.0...1.0.1)
 
 ## [1.0.0](https://github.com/brsynth/rplibs/tree/1.0.0) (2022-04-28)
 
