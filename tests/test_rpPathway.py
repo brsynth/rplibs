@@ -9,7 +9,7 @@ from os import remove
 from copy import deepcopy
 
 # from xmldiff import main as xmldiff_main
-from rr_cache import rrCache
+# from rr_cache import rrCache
 from rplibs import rpPathway, rpReaction, rpCompound
 from rplibs.cobra_format import at_pattern
 from main_rplibs import Main_rplibs
