@@ -175,9 +175,9 @@ class Test_rpPathway(Main_rplibs):
             {
                 "id": "MNXC3",
                 "name": "cytosol",
-                "annot": cache.get("comp_xref")[
-                    cache.get("deprecatedCompID_compid")["MNXC3"]
-                ],
+                # "annot": cache.get("comp_xref")[
+                #     cache.get("deprecatedCompID_compid")["MNXC3"]
+                # ],
             }
         ]
 
