@@ -165,12 +165,12 @@ class Test_rpPathway(Main_rplibs):
         self.idx_in_path = 1
         self.rule_score = 0.5982208769718989
         self.id = "pathway"
-        cache = rrCache(
-            # attrs=[
-            #     'comp_xref',
-            #     'deprecatedCompID_compid',
-            # ]
-        )
+        # cache = rrCache(
+        #     # attrs=[
+        #     #     'comp_xref',
+        #     #     'deprecatedCompID_compid',
+        #     # ]
+        # )
         self.compartments = [
             {
                 "id": "MNXC3",
