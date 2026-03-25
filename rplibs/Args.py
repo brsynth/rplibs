@@ -12,10 +12,6 @@ def build_args_parser(
     # Build Parser with rptools common arguments
     parser = add_arguments(parser)
 
-    # Add module specific arguments
-    # if m_add_args is not None:
-    #     parser = m_add_args(parser)
-
     return parser
 
 
