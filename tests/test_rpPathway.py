@@ -9,7 +9,7 @@ from os import remove
 from copy import deepcopy
 
 # from xmldiff import main as xmldiff_main
-from rr_cache import rrCache
+# from rr_cache import rrCache
 from rplibs import rpPathway, rpReaction, rpCompound
 from rplibs.cobra_format import at_pattern
 from main_rplibs import Main_rplibs
@@ -165,19 +165,19 @@ class Test_rpPathway(Main_rplibs):
         self.idx_in_path = 1
         self.rule_score = 0.5982208769718989
         self.id = "pathway"
-        cache = rrCache(
-            # attrs=[
-            #     'comp_xref',
-            #     'deprecatedCompID_compid',
-            # ]
-        )
+        # cache = rrCache(
+        #     # attrs=[
+        #     #     'comp_xref',
+        #     #     'deprecatedCompID_compid',
+        #     # ]
+        # )
         self.compartments = [
             {
                 "id": "MNXC3",
                 "name": "cytosol",
-                "annot": cache.get("comp_xref")[
-                    cache.get("deprecatedCompID_compid")["MNXC3"]
-                ],
+                # "annot": cache.get("comp_xref")[
+                #     cache.get("deprecatedCompID_compid")["MNXC3"]
+                # ],
             }
         ]
 
