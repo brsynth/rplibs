@@ -59,7 +59,7 @@ CONDA_SUBDIR=osx-64 conda install -c conda-forge rplibs
 Or with mamba:
 
 ```bash
-CONDA_SUBDIR=osx-64 mamba env create -f environment.yml
+CONDA_SUBDIR=osx-64 mamba install -c conda-forge rplibs
 ```
 
 ### 3. Persist platform setting
