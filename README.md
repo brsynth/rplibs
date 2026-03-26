@@ -1,6 +1,6 @@
 # rplibs
 
-Libraries for rpTools, contains:
+rpLibs, contains:
 * rpSBML
 * inchikeyMIRIAM
 * rpPathway, rpReaction, rpCompound (inheritance from [chemlite](https://github.com/brsynth/chemlite))
@@ -9,9 +9,120 @@ Libraries for rpTools, contains:
 Defines an enriched SBML structure with additional fields relative to [RetroPath2](https://github.com/brsynth/RetroPath2-wrapper) objects.
 
 
-## Install
-```sh
-[sudo] conda install -c conda-forge rplibs
+# rplibs Installation Guide
+
+## Overview
+
+`rplibs` depends on `cobra`, which requires `python-libsbml`.  
+On Apple Silicon (`arm64`) macOS, `python-libsbml` is not available as a native Conda package.
+
+Therefore, installation must be done using an **Intel (`osx-64`) Conda environment under Rosetta**.
+
+---
+
+## Apple Silicon macOS (M1/M2/M3)
+
+### 1. Install Rosetta 2
+
+```bash
+softwareupdate --install-rosetta --agree-to-license
+```
+
+### 2. Create the environment
+
+```bash
+CONDA_SUBDIR=osx-64 conda env create -f environment.yml
+```
+
+Or with mamba:
+
+```bash
+CONDA_SUBDIR=osx-64 mamba env create -f environment.yml
+```
+
+### 3. Activate the environment
+
+```bash
+conda activate rplibs
+```
+
+### 4. Persist platform setting
+
+```bash
+conda config --env --set subdir osx-64
+```
+
+### 5. Verify installation
+
+```bash
+python -c "import rplibs; print('rplibs installed successfully')"
+python -c "import cobra; print(cobra.__version__)"
+```
+
+---
+
+## Intel macOS (x86_64)
+
+```bash
+conda env create -f environment.yml
+conda activate rplibs
+```
+
+---
+
+## Linux
+
+```bash
+conda env create -f environment.yml
+conda activate rplibs
+```
+
+---
+
+## Updating the environment
+
+```bash
+CONDA_SUBDIR=osx-64 conda env update -f environment.yml --prune
+```
+
+Or with mamba:
+
+```bash
+CONDA_SUBDIR=osx-64 mamba env update -f environment.yml --prune
+```
+
+---
+
+## Troubleshooting
+
+### Solver fails on Apple Silicon
+
+Make sure you are using:
+
+```bash
+CONDA_SUBDIR=osx-64
+```
+
+### Wrong architecture environment
+
+Check:
+
+```bash
+conda config --show subdir
+```
+
+Expected output:
+
+```bash
+subdir: osx-64
+```
+
+If incorrect, recreate the environment:
+
+```bash
+conda deactivate
+conda env remove -n rplibs
+CONDA_SUBDIR=osx-64 conda env create -f environment.yml
 ```
 
 ### Test
