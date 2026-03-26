@@ -9,6 +9,21 @@ rpLibs, contains:
 Defines an enriched SBML structure with additional fields relative to [RetroPath2](https://github.com/brsynth/RetroPath2-wrapper) objects.
 
 
+### Merging
+rpSBML class allows the merging between two rpSBML objects. This method is using to integrate an heterologu pathway within a model.
+
+#### Compartments
+The compartment of the pathway to each compartment of the model. The comparison is done by ID, name or MIRIAM annotations. If a model compartment matches, then we rename the compartment of each species of the pathway to the name of the model matched compartment. Otherwise, the pathway compartment is added to the model.
+
+## inchikeyMIRIAM
+Uses the rrCache to parse an SBML file to find all the chemical species, and try to recover the inchikey and add it to the MIRIAM annotation.
+
+## Statisticis
+To print statistics on pathways, type:
+```
+python -m rplibs.stats --pathways <Pathway_1> <Pathway_2>
+
+
 # rplibs Installation Guide
 
 ## Overview
@@ -20,6 +35,13 @@ Therefore, installation must be done using an **Intel (`osx-64`) Conda environme
 
 ---
 
+## General case
+```bash
+conda install -c conda-forge rplibs
+```
+
+---
+
 ## Apple Silicon macOS (M1/M2/M3)
 
 ### 1. Install Rosetta 2
@@ -28,10 +50,10 @@ Therefore, installation must be done using an **Intel (`osx-64`) Conda environme
 softwareupdate --install-rosetta --agree-to-license
 ```
 
-### 2. Create the environment
+### 2. Install rpLibs
 
 ```bash
-CONDA_SUBDIR=osx-64 conda env create -f environment.yml
+CONDA_SUBDIR=osx-64 conda install -c conda-forge rplibs
 ```
 
 Or with mamba:
@@ -40,13 +62,7 @@ Or with mamba:
 CONDA_SUBDIR=osx-64 mamba env create -f environment.yml
 ```
 
-### 3. Activate the environment
-
-```bash
-conda activate rplibs
-```
-
-### 4. Persist platform setting
+### 3. Persist platform setting
 
 ```bash
 conda config --env --set subdir osx-64
@@ -57,38 +73,6 @@ conda config --env --set subdir osx-64
 ```bash
 python -c "import rplibs; print('rplibs installed successfully')"
 python -c "import cobra; print(cobra.__version__)"
-```
-
----
-
-## Intel macOS (x86_64)
-
-```bash
-conda env create -f environment.yml
-conda activate rplibs
-```
-
----
-
-## Linux
-
-```bash
-conda env create -f environment.yml
-conda activate rplibs
-```
-
----
-
-## Updating the environment
-
-```bash
-CONDA_SUBDIR=osx-64 conda env update -f environment.yml --prune
-```
-
-Or with mamba:
-
-```bash
-CONDA_SUBDIR=osx-64 mamba env update -f environment.yml --prune
 ```
 
 ---
@@ -117,32 +101,10 @@ Expected output:
 subdir: osx-64
 ```
 
-If incorrect, recreate the environment:
-
-```bash
-conda deactivate
-conda env remove -n rplibs
-CONDA_SUBDIR=osx-64 conda env create -f environment.yml
-```
-
 ### Test
 ```
 python -m pytest tests
 ```
-
-### Merging
-rpSBML class allows the merging between two rpSBML objects. This method is using to integrate an heterologu pathway within a model.
-
-#### Compartments
-The compartment of the pathway to each compartment of the model. The comparison is done by ID, name or MIRIAM annotations. If a model compartment matches, then we rename the compartment of each species of the pathway to the name of the model matched compartment. Otherwise, the pathway compartment is added to the model.
-
-## inchikeyMIRIAM
-Uses the rrCache to parse an SBML file to find all the chemical species, and try to recover the inchikey and add it to the MIRIAM annotation.
-
-## Statisticis
-To print statistics on pathways, type:
-```
-python -m rplibs.stats --pathways <Pathway_1> <Pathway_2>
 ```
 
 ## Authors
