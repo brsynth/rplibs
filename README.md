@@ -24,7 +24,7 @@ To print statistics on pathways, type:
 python -m rplibs.stats --pathways <Pathway_1> <Pathway_2>
 
 
-# rplibs Installation Guide
+# Installation Guide
 
 ## Overview
 
