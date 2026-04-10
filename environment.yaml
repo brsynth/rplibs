@@ -5,9 +5,9 @@ dependencies:
   - python=3.11
   - numpy
   - pandas
-  - networkx >=2.5
+  - networkx>=2.5
   - filetype
-  - brs_utils
+  - brs_utils>=1.26.0
   - chemlite
   - rr_cache
   - cobra
