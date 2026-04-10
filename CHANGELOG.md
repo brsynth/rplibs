@@ -1,8 +1,16 @@
 # Changelog
 
+## [6.9.3](https://github.com/brsynth/rplibs/tree/6.9.3) (2026-04-10)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/6.9.2...6.9.3)
+
 ## [6.9.2](https://github.com/brsynth/rplibs/tree/6.9.2) (2026-04-10)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/6.9.1...6.9.2)
+
+**Merged pull requests:**
+
+- Main [\#20](https://github.com/brsynth/rplibs/pull/20) ([breakthewall](https://github.com/breakthewall))
 
 ## [6.9.1](https://github.com/brsynth/rplibs/tree/6.9.1) (2026-03-26)
 
