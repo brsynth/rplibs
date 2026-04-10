@@ -35,7 +35,7 @@
             
   <section id="rplibs">
 <h1>rplibs<a class="headerlink" href="#rplibs" title="Link to this heading">¶</a></h1>
-<p>Libraries for rpTools, contains:</p>
+<p>rpLibs, contains:</p>
 <ul class="simple">
 <li><p>rpSBML</p></li>
 <li><p>inchikeyMIRIAM</p></li>
@@ -44,18 +44,6 @@
 <section id="rpsbml">
 <h2>rpSBML<a class="headerlink" href="#rpsbml" title="Link to this heading">¶</a></h2>
 <p>Defines an enriched SBML structure with additional fields relative to <a class="reference external" href="https://github.com/brsynth/RetroPath2-wrapper">RetroPath2</a> objects.</p>
-</section>
-<section id="install">
-<h2>Install<a class="headerlink" href="#install" title="Link to this heading">¶</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>sudo<span class="o">]</span><span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>rplibs
-</pre></div>
-</div>
-<section id="test">
-<h3>Test<a class="headerlink" href="#test" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span> <span class="n">tests</span>
-</pre></div>
-</div>
-</section>
 <section id="merging">
 <h3>Merging<a class="headerlink" href="#merging" title="Link to this heading">¶</a></h3>
 <p>rpSBML class allows the merging between two rpSBML objects. This method is using to integrate an heterologu pathway within a model.</p>
@@ -72,26 +60,101 @@
 <section id="statisticis">
 <h2>Statisticis<a class="headerlink" href="#statisticis" title="Link to this heading">¶</a></h2>
 <p>To print statistics on pathways, type:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">rplibs</span><span class="o">.</span><span class="n">stats</span> <span class="o">--</span><span class="n">pathways</span> <span class="o">&lt;</span><span class="n">Pathway_1</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">Pathway_2</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python -m rplibs.stats --pathways &lt;Pathway_1&gt; &lt;Pathway_2&gt;
+
+
+# Installation Guide
+
+## Overview
+
+`rplibs` depends on `cobra`, which requires `python-libsbml`.  
+On Apple Silicon (`arm64`) macOS, `python-libsbml` is not available as a native Conda package.
+
+Therefore, installation must be done using an **Intel (`osx-64`) Conda environment under Rosetta**.
+
+---
+
+## General case
+```bash
+conda install -c conda-forge rplibs
 </pre></div>
 </div>
 </section>
-<section id="authors">
-<h2>Authors<a class="headerlink" href="#authors" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><strong>Joan Hérisson</strong></p></li>
-<li><p><strong>Melchior du Lac</strong></p></li>
-</ul>
+<hr class="docutils" />
+<section id="apple-silicon-macos-m1-m2-m3">
+<h2>Apple Silicon macOS (M1/M2/M3)<a class="headerlink" href="#apple-silicon-macos-m1-m2-m3" title="Link to this heading">¶</a></h2>
+<section id="install-rosetta-2">
+<h3>1. Install Rosetta 2<a class="headerlink" href="#install-rosetta-2" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>softwareupdate<span class="w"> </span>--install-rosetta<span class="w"> </span>--agree-to-license
+</pre></div>
+</div>
 </section>
-<section id="acknowledgments">
-<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>Thomas Duigou</p></li>
-</ul>
+<section id="install-rplibs">
+<h3>2. Install rpLibs<a class="headerlink" href="#install-rplibs" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CONDA_SUBDIR</span><span class="o">=</span>osx-64<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>rplibs
+</pre></div>
+</div>
+<p>Or with mamba:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CONDA_SUBDIR</span><span class="o">=</span>osx-64<span class="w"> </span>mamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>rplibs
+</pre></div>
+</div>
 </section>
-<section id="licence">
-<h2>Licence<a class="headerlink" href="#licence" title="Link to this heading">¶</a></h2>
-<p>rplibs is released under the MIT licence. See the LICENCE file for details.</p>
+<section id="persist-platform-setting">
+<h3>3. Persist platform setting<a class="headerlink" href="#persist-platform-setting" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>config<span class="w"> </span>--env<span class="w"> </span>--set<span class="w"> </span>subdir<span class="w"> </span>osx-64
+</pre></div>
+</div>
+</section>
+<section id="verify-installation">
+<h3>5. Verify installation<a class="headerlink" href="#verify-installation" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import rplibs; print(&#39;rplibs installed successfully&#39;)&quot;</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import cobra; print(cobra.__version__)&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
+<section id="solver-fails-on-apple-silicon">
+<h3>Solver fails on Apple Silicon<a class="headerlink" href="#solver-fails-on-apple-silicon" title="Link to this heading">¶</a></h3>
+<p>Make sure you are using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CONDA_SUBDIR</span><span class="o">=</span>osx-64
+</pre></div>
+</div>
+</section>
+<section id="wrong-architecture-environment">
+<h3>Wrong architecture environment<a class="headerlink" href="#wrong-architecture-environment" title="Link to this heading">¶</a></h3>
+<p>Check:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>config<span class="w"> </span>--show<span class="w"> </span>subdir
+</pre></div>
+</div>
+<p>Expected output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>subdir:<span class="w"> </span>osx-64
+</pre></div>
+</div>
+</section>
+<section id="test">
+<h3>Test<a class="headerlink" href="#test" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span> <span class="n">tests</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+<span class="c1">## Authors</span>
+
+<span class="o">*</span> <span class="o">**</span><span class="n">Joan</span> <span class="n">Hérisson</span><span class="o">**</span>
+<span class="o">*</span> <span class="o">**</span><span class="n">Melchior</span> <span class="n">du</span> <span class="n">Lac</span><span class="o">**</span>
+
+<span class="c1">## Acknowledgments</span>
+
+<span class="o">*</span> <span class="n">Thomas</span> <span class="n">Duigou</span>
+
+
+<span class="c1">## Licence</span>
+<span class="n">rplibs</span> <span class="ow">is</span> <span class="n">released</span> <span class="n">under</span> <span class="n">the</span> <span class="n">MIT</span> <span class="n">licence</span><span class="o">.</span> <span class="n">See</span> <span class="n">the</span> <span class="n">LICENCE</span> <span class="n">file</span> <span class="k">for</span> <span class="n">details</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -124,9 +187,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">rplibs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#rpsbml">rpSBML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install">Install</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#test">Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rpsbml">rpSBML</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#merging">Merging</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#compartments">Compartments</a></li>
 </ul>
@@ -135,9 +196,19 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#inchikeymiriam">inchikeyMIRIAM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#statisticis">Statisticis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#authors">Authors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#acknowledgments">Acknowledgments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#licence">Licence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#apple-silicon-macos-m1-m2-m3">Apple Silicon macOS (M1/M2/M3)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-rosetta-2">1. Install Rosetta 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-rplibs">2. Install rpLibs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#persist-platform-setting">3. Persist platform setting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#verify-installation">5. Verify installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#solver-fails-on-apple-silicon">Solver fails on Apple Silicon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wrong-architecture-environment">Wrong architecture environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test">Test</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="release_shortcut.html">Release</a></li>

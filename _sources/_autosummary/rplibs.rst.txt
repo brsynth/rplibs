@@ -26,7 +26,6 @@
    :template: custom-module-template.rst
    :recursive:
 
-   Args
    cobra_format
    inchikeyMIRIAM
    rpCompound

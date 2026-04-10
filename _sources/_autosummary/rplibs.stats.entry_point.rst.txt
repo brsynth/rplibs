@@ -1,6 +1,0 @@
-rplibs.stats.entry\_point
-=========================
-
-.. currentmodule:: rplibs.stats
-
-.. autofunction:: entry_point
