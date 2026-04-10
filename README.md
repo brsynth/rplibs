@@ -1,6 +1,6 @@
 # rplibs
 
-Libraries for rpTools, contains:
+rpLibs, contains:
 * rpSBML
 * inchikeyMIRIAM
 * rpPathway, rpReaction, rpCompound (inheritance from [chemlite](https://github.com/brsynth/chemlite))
@@ -8,16 +8,6 @@ Libraries for rpTools, contains:
 ## rpSBML
 Defines an enriched SBML structure with additional fields relative to [RetroPath2](https://github.com/brsynth/RetroPath2-wrapper) objects.
 
-
-## Install
-```sh
-[sudo] conda install -c conda-forge rplibs
-```
-
-### Test
-```
-python -m pytest tests
-```
 
 ### Merging
 rpSBML class allows the merging between two rpSBML objects. This method is using to integrate an heterologu pathway within a model.
@@ -32,6 +22,89 @@ Uses the rrCache to parse an SBML file to find all the chemical species, and try
 To print statistics on pathways, type:
 ```
 python -m rplibs.stats --pathways <Pathway_1> <Pathway_2>
+
+
+# Installation Guide
+
+## Overview
+
+`rplibs` depends on `cobra`, which requires `python-libsbml`.  
+On Apple Silicon (`arm64`) macOS, `python-libsbml` is not available as a native Conda package.
+
+Therefore, installation must be done using an **Intel (`osx-64`) Conda environment under Rosetta**.
+
+---
+
+## General case
+```bash
+conda install -c conda-forge rplibs
+```
+
+---
+
+## Apple Silicon macOS (M1/M2/M3)
+
+### 1. Install Rosetta 2
+
+```bash
+softwareupdate --install-rosetta --agree-to-license
+```
+
+### 2. Install rpLibs
+
+```bash
+CONDA_SUBDIR=osx-64 conda install -c conda-forge rplibs
+```
+
+Or with mamba:
+
+```bash
+CONDA_SUBDIR=osx-64 mamba install -c conda-forge rplibs
+```
+
+### 3. Persist platform setting
+
+```bash
+conda config --env --set subdir osx-64
+```
+
+### 5. Verify installation
+
+```bash
+python -c "import rplibs; print('rplibs installed successfully')"
+python -c "import cobra; print(cobra.__version__)"
+```
+
+---
+
+## Troubleshooting
+
+### Solver fails on Apple Silicon
+
+Make sure you are using:
+
+```bash
+CONDA_SUBDIR=osx-64
+```
+
+### Wrong architecture environment
+
+Check:
+
+```bash
+conda config --show subdir
+```
+
+Expected output:
+
+```bash
+subdir: osx-64
+```
+
+### Test
+```
+python -m pytest tests
+```
 ```
 
 ## Authors
