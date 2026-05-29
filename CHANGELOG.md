@@ -1,8 +1,16 @@
 # Changelog
 
+## [6.9.4](https://github.com/brsynth/rplibs/tree/6.9.4) (2026-05-29)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/6.9.3...6.9.4)
+
 ## [6.9.3](https://github.com/brsynth/rplibs/tree/6.9.3) (2026-04-10)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/6.9.2...6.9.3)
+
+**Merged pull requests:**
+
+- build\(environment.yaml\): update dep ver [\#21](https://github.com/brsynth/rplibs/pull/21) ([breakthewall](https://github.com/breakthewall))
 
 ## [6.9.2](https://github.com/brsynth/rplibs/tree/6.9.2) (2026-04-10)
 
