@@ -21,9 +21,9 @@ class Test_rpPathway(Main_rplibs):
         self.target = rpCompound(
             id="TARGET_0000000001",
             smiles="[H]C(=C([H])C([H])=C(C([H])=C([H])C([H])=C(C([H])=C([H])C([H])=C(C([H])([H])[H])C([H])([H])C([H])([H])C([H])=C(C([H])([H])[H])C([H])([H])[H])C([H])([H])[H])C([H])([H])[H])C([H])=C(C([H])=C([H])C([H])=C(C([H])=C([H])C([H])=C(C([H])([H])[H])C([H])([H])C([H])([H])C([H])=C(C([H])([H])[H])C([H])([H])[H])C([H])([H])[H])C([H])([H])[H]",
-            inchi='InChI=1S/C40H56/c1-33(2)19-13-23-37(7)27-17-31-39(9)29-15-25-35(5)21-11-12-22-36(6)26-16-30-40(10)32-18-28-38(8)24-14-20-34(3)4/h11-12,15-22,25-32H,13-14,23-24H2,1-10H3',
-            inchikey='OAIJSZIZWZSQBC-UHFFFAOYSA-N',
-            formula=''
+            inchi="InChI=1S/C40H56/c1-33(2)19-13-23-37(7)27-17-31-39(9)29-15-25-35(5)21-11-12-22-36(6)26-16-30-40(10)32-18-28-38(8)24-14-20-34(3)4/h11-12,15-22,25-32H,13-14,23-24H2,1-10H3",
+            inchikey="OAIJSZIZWZSQBC-UHFFFAOYSA-N",
+            formula="",
         )
         # species = {
         #     # "TARGET_0000000001": rpCompound(
@@ -199,9 +199,7 @@ class Test_rpPathway(Main_rplibs):
                 {"kind": 13, "exponent": -1, "scale": 1, "multiplier": 1.0},
             ],
         }
-        self.pathway = rpPathway(
-            id=self.id
-        )
+        self.pathway = rpPathway(id=self.id)
         self.pathway.set_parameters(self.parameters)
         self.pathway.set_unit_defs(self.unit_def)
         self.rxn.set_rp2_transfo_id(self.rp2_transfo_id)

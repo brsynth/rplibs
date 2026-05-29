@@ -800,7 +800,11 @@ class rpPathway(Pathway, rpObject):
         rpsbml.create_enriched_group(
             group_id="rp_pathway",
             members=self.get_reactions_ids(),
-            infos={**rpObject._to_dict(self), "global_score": self.get_global_score(), "target_id": self.get_target_id()},
+            infos={
+                **rpObject._to_dict(self),
+                "global_score": self.get_global_score(),
+                "target_id": self.get_target_id(),
+            },
         )
         for group_id, group_members in self.get_species_groups().items():
             _members = [local_cache.get(spe_id, spe_id) for spe_id in group_members]
