@@ -546,6 +546,7 @@
                   <brsynth:units value="kilojoule / mole"/>
                 </brsynth:thermo_dG>
                 <brsynth:global_score value="0.9892438888549804"/>
+                <brsynth:target_id value="TARGET_0000000001"/>
               </brsynth:brsynth>
             </rdf:BRSynth>
           </rdf:RDF>

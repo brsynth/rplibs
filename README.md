@@ -50,7 +50,7 @@ conda install -c conda-forge rplibs
 softwareupdate --install-rosetta --agree-to-license
 ```
 
-### 2. Install rpLibs
+### 2. Install
 
 ```bash
 CONDA_SUBDIR=osx-64 conda install -c conda-forge rplibs
@@ -68,11 +68,16 @@ CONDA_SUBDIR=osx-64 mamba install -c conda-forge rplibs
 conda config --env --set subdir osx-64
 ```
 
-### 5. Verify installation
+### 4. Verify installation
 
 ```bash
 python -c "import rplibs; print('rplibs installed successfully')"
-python -c "import cobra; print(cobra.__version__)"
+```
+
+### 5. (Optional) Dev installation
+
+```bash
+CONDA_SUBDIR=osx-64 conda env create -f environment.yaml
 ```
 
 ---

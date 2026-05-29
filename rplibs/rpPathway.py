@@ -74,7 +74,6 @@ class rpPathway(Pathway, rpObject):
         )
         rpObject.__init__(self, logger)
         self.__species_groups = {}
-        self.set_target_id(None)
         self.__unit_def = {}
         self.__compartments = {}
         self.add_compartment(
@@ -206,9 +205,9 @@ class rpPathway(Pathway, rpObject):
         the target compound of the pathway."""
         return self.get_reaction(self.get_target_rxn_id())
 
-    def get_target_id(self) -> str:
-        """Get the ID of the pathway target compound."""
-        return self.__target_id
+    # def get_target_id(self) -> str:
+    #     """Get the ID of the pathway target compound."""
+    #     return self.__target_id
 
     def get_target(self) -> rpCompound:
         """Get the object of the pathway target compound."""
@@ -462,18 +461,18 @@ class rpPathway(Pathway, rpObject):
         self.__build_intermediate_species()
         # self.__sink = deepcopy(sink)
 
-    def set_target_id(self, id: str) -> None:
-        """Set the ID of the pathway target.
-        After that, 'intermediate' species group is rebuilt.
+    # def set_target_id(self, id: str) -> None:
+    #     """Set the ID of the pathway target.
+    #     After that, 'intermediate' species group is rebuilt.
 
-        Parameters
-        ----------
-        id: str
-            ID of the species to set as the pathway target.
-        """
-        self.__target_id = id
-        # (re-)build intermediate species group
-        self.__build_intermediate_species()
+    #     Parameters
+    #     ----------
+    #     id: str
+    #         ID of the species to set as the pathway target.
+    #     """
+    #     self.__target_id = id
+    #     # (re-)build intermediate species group
+    #     self.__build_intermediate_species()
 
     def add_unit_def(
         self, id: str, kind: int, exp: int, scale: int, mult: float
@@ -632,9 +631,9 @@ class rpPathway(Pathway, rpObject):
             rxn_infos["fbc_units"] = self.get_parameter_units(
                 rxn_infos["fbc_lower_value"]
             )
-            reaction, target_id = rpReaction.build(rxn_id, rxn_infos, logger)
+            reaction = rpReaction.build(rxn_id, rxn_infos, logger)
             # Add the reaction to the pathway
-            self.add_reaction(rxn=reaction, target_id=target_id)
+            self.add_reaction(rxn=reaction)
 
         ## GROUPS
         for group in rpsbml.getPlugin("groups").getListOfGroups():
@@ -801,7 +800,11 @@ class rpPathway(Pathway, rpObject):
         rpsbml.create_enriched_group(
             group_id="rp_pathway",
             members=self.get_reactions_ids(),
-            infos={**rpObject._to_dict(self), "global_score": self.get_global_score()},
+            infos={
+                **rpObject._to_dict(self),
+                "global_score": self.get_global_score(),
+                "target_id": self.get_target_id(),
+            },
         )
         for group_id, group_members in self.get_species_groups().items():
             _members = [local_cache.get(spe_id, spe_id) for spe_id in group_members]
@@ -828,27 +831,27 @@ class rpPathway(Pathway, rpObject):
         pathway.__import_rpSBML(rpsbml)
         return pathway
 
-    def add_reaction(
-        self, rxn: rpReaction, rxn_id: str = None, target_id: str = None
-    ) -> None:
-        """
-        Add a reaction to the pathway.
+    # def add_reaction(
+    #     self, rxn: rpReaction, rxn_id: str = None, target_id: str = None
+    # ) -> None:
+    #     """
+    #     Add a reaction to the pathway.
 
-        Parameters
-        ----------
-        rxn: rpReaction
-            Reaction object to add
-        rxn_id: str, optional
-            ID of the reaction within the pathway
-        target_id: str, optional
-            ID of the compound if it is the pathway target
-        """
+    #     Parameters
+    #     ----------
+    #     rxn: rpReaction
+    #         Reaction object to add
+    #     rxn_id: str, optional
+    #         ID of the reaction within the pathway
+    #     target_id: str, optional
+    #         ID of the compound if it is the pathway target
+    #     """
 
-        super().add_reaction(rxn, rxn_id)
+    #     super().add_reaction(rxn, rxn_id)
 
-        # TARGET
-        if target_id is not None:
-            self.set_target_id(target_id)
+    #     # TARGET
+    #     if target_id is not None:
+    #         self.set_target_id(target_id)
 
     ## MISC
     def rename_compound(self, id: str, new_id: str) -> None:

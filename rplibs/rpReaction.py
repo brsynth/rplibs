@@ -79,22 +79,23 @@ class rpReaction(Reaction, rpObject):
         )
         # Add additional infos
         write_to(infos["brsynth"], reaction)
-        # Detects if the current reaction produces the target
-        target_id = [
-            spe_id for spe_id in reaction.get_products_ids() if "TARGET" in spe_id
-        ]
-        if target_id != []:
-            target_id = target_id[0]
-        else:
-            # If not, detects if the current reaction consumes the target
-            target_id = [
-                spe_id for spe_id in reaction.get_reactants_ids() if "TARGET" in spe_id
-            ]
-            if target_id != []:
-                target_id = target_id[0]
-            else:
-                target_id = None
-        return reaction, target_id
+        # # Detects if the current reaction produces the target
+        # target_id = [
+        #     spe_id for spe_id in reaction.get_products_ids() if "TARGET" in spe_id
+        # ]
+        # if target_id != []:
+        #     target_id = target_id[0]
+        # else:
+        #     # If not, detects if the current reaction consumes the target
+        #     target_id = [
+        #         spe_id for spe_id in reaction.get_reactants_ids() if "TARGET" in spe_id
+        #     ]
+        #     if target_id != []:
+        #         target_id = target_id[0]
+        #     else:
+        #         target_id = None
+        # return reaction, target_id
+        return reaction
 
     def __init__(
         self,

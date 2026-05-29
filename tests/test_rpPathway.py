@@ -20,7 +20,10 @@ class Test_rpPathway(Main_rplibs):
     def setUp(self):
         self.target = rpCompound(
             id="TARGET_0000000001",
-            smiles="[H]OC(=O)C([H])=C([H])C([H])=C([H])C(=O)O[H]",
+            smiles="[H]C(=C([H])C([H])=C(C([H])=C([H])C([H])=C(C([H])=C([H])C([H])=C(C([H])([H])[H])C([H])([H])C([H])([H])C([H])=C(C([H])([H])[H])C([H])([H])[H])C([H])([H])[H])C([H])([H])[H])C([H])=C(C([H])=C([H])C([H])=C(C([H])=C([H])C([H])=C(C([H])([H])[H])C([H])([H])C([H])([H])C([H])=C(C([H])([H])[H])C([H])([H])[H])C([H])([H])[H])C([H])([H])[H]",
+            inchi="InChI=1S/C40H56/c1-33(2)19-13-23-37(7)27-17-31-39(9)29-15-25-35(5)21-11-12-22-36(6)26-16-30-40(10)32-18-28-38(8)24-14-20-34(3)4/h11-12,15-22,25-32H,13-14,23-24H2,1-10H3",
+            inchikey="OAIJSZIZWZSQBC-UHFFFAOYSA-N",
+            formula="",
         )
         # species = {
         #     # "TARGET_0000000001": rpCompound(
@@ -196,9 +199,7 @@ class Test_rpPathway(Main_rplibs):
                 {"kind": 13, "exponent": -1, "scale": 1, "multiplier": 1.0},
             ],
         }
-        self.pathway = rpPathway(
-            id=self.id,
-        )
+        self.pathway = rpPathway(id=self.id)
         self.pathway.set_parameters(self.parameters)
         self.pathway.set_unit_defs(self.unit_def)
         self.rxn.set_rp2_transfo_id(self.rp2_transfo_id)
@@ -206,7 +207,8 @@ class Test_rpPathway(Main_rplibs):
         self.rxn.set_tmpl_rxn_ids(self.tmpl_rxn_ids)
         self.rxn.set_idx_in_path(self.idx_in_path)
         self.rxn.set_rule_score(self.rule_score)
-        self.pathway.add_reaction(rxn=self.rxn, target_id=self.target.get_id())
+        self.pathway.add_reaction(rxn=self.rxn)
+        self.pathway.set_target_id(self.target.get_id())
         for rxn in self.reactions[1:]:
             self.pathway.add_reaction(rxn)
         self.sink = ["MNXM23", "MNXM6", "MNXM13"]
@@ -214,6 +216,8 @@ class Test_rpPathway(Main_rplibs):
         for key, value in self.thermo.items():
             self.pathway.add_thermo_info(key, value)
         self.pathway.set_fba_fraction(self.fba)
+
+        self.rpsbml_lycopene = rpPathway(infile=self.rpsbml_lycopene_path)
 
     ## READ METHODS
     def test__to_dict(self):
@@ -302,7 +306,20 @@ class Test_rpPathway(Main_rplibs):
         self.assertEqual(self.pathway.get_rxn_target(), self.rxn)
 
     def test_get_target(self):
-        self.assertEqual(self.pathway.get_target(), self.target)
+        # Compare ID, name, smiles, inchi, inchikey, formula, but not annotations, to avoid issues with the cache
+        self.__compare_compound(self.pathway.get_target(), self.target)
+
+    def __compare_compound(self, cmpd1: rpCompound, reference: rpCompound):
+        self.assertEqual(cmpd1.get_id(), reference.get_id())
+        self.assertEqual(cmpd1.get_name(), reference.get_name())
+        self.assertEqual(cmpd1.get_smiles(), reference.get_smiles())
+        self.assertEqual(cmpd1.get_inchi(), reference.get_inchi())
+        self.assertEqual(cmpd1.get_inchikey(), reference.get_inchikey())
+        self.assertEqual(cmpd1.get_formula(), reference.get_formula())
+
+    def test_read_target(self):
+        target = rpPathway(infile=self.rpsbml_lycopene_path).get_target()
+        self.__compare_compound(target, self.target)
 
     def test_get_parameters(self):
         self.assertDictEqual(self.pathway.get_parameters(), self.parameters)
@@ -317,21 +334,21 @@ class Test_rpPathway(Main_rplibs):
     def test_get_thermo(self):
         self.assertDictEqual(self.pathway.get_thermo(), self.thermo)
 
-    def test_rpSBML_rpsbml(self):
+    def test_rpPathway2rpSBML2rpPathway(self):
         self.assertEqual(
             self.pathway, rpPathway.from_rpSBML(rpsbml=self.pathway.to_rpSBML())
         )
 
-    def test_rpSBML_file(self):
-        with NamedTemporaryFile(delete=False) as tempf:
-            tempf.close()
-            self.assertEqual(
-                self.pathway, rpPathway.from_rpSBML(self.pathway.to_rpSBML())
-            )
-            tempf.close()
-            remove(tempf.name)
+    # def test_rpSBML_file(self):
+    #     with NamedTemporaryFile(delete=False) as tempf:
+    #         tempf.close()
+    #         self.assertEqual(
+    #             self.pathway, rpPathway.from_rpSBML(self.pathway.to_rpSBML())
+    #         )
+    #         tempf.close()
+    #         remove(tempf.name)
 
-    def test_rpSBML_file_rpsbml(self):
+    def test_rpPathway2SBML2rpPathway(self):
         with NamedTemporaryFile(delete=False) as tempf:
             self.pathway.to_rpSBML().write_to_file(tempf.name)
             self.assertEqual(self.pathway, rpPathway(infile=tempf.name))
@@ -380,7 +397,8 @@ class Test_rpPathway(Main_rplibs):
 
     def test_eq(self):
         pathway = rpPathway(id="test_pathway")
-        pathway.add_reaction(rxn=self.rxn, target_id="TARGET_0000000001")
+        pathway.add_reaction(rxn=self.rxn)
+        pathway.set_target_id("TARGET_0000000001")
         for rxn in self.reactions[1:]:
             pathway.add_reaction(rxn)
         self.assertEqual(self.pathway, pathway)
