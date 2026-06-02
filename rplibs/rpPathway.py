@@ -193,21 +193,10 @@ class rpPathway(Pathway, rpObject):
         intermediate = trunk - sink - target"""
         return self.get_species_group("intermediate")
 
-    def get_target_rxn_id(self) -> str:
-        """Get the ID of the reaction that produces
-        the target compound of the pathway."""
-        for rxn in self.get_list_of_reactions():
-            if self.get_target_id() in rxn.get_products_ids():
-                return rxn.get_id()
-
     def get_rxn_target(self) -> rpReaction:
         """Get the object of the reaction that produces
         the target compound of the pathway."""
         return self.get_reaction(self.get_target_rxn_id())
-
-    # def get_target_id(self) -> str:
-    #     """Get the ID of the pathway target compound."""
-    #     return self.__target_id
 
     def get_target(self) -> rpCompound:
         """Get the object of the pathway target compound."""
