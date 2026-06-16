@@ -149,7 +149,7 @@ class rpReaction(Reaction, rpObject):
             logger=logger,
         )
         rpObject.__init__(self)
-        self.set_rp2_transfo_id(None)
+        self.set_transfo_id(None)
         self.set_rule_ids([])
         self.set_tmpl_rxn_ids([])
         self.set_rule_score("NaN")
@@ -192,7 +192,7 @@ class rpReaction(Reaction, rpObject):
             for k, v in self.get_selenzy().items()
         }
         return {
-            "rp2_transfo_id": self.get_rp2_transfo_id(),
+            "transfo_id": self.get_transfo_id(),
             "rule_ids": self.get_rule_ids(),
             "tmpl_rxn_ids": self.get_tmpl_rxn_ids(),
             "rule_score": self.get_rule_score(),
@@ -218,10 +218,10 @@ class rpReaction(Reaction, rpObject):
         return True
 
     ## READ METHODS
-    def get_rp2_transfo_id(self) -> str:
+    def get_transfo_id(self) -> str:
         """Get the ID of chemical transformation that
         the current reaction has been generated from."""
-        return self.__rp2_transfo_id
+        return self.__transfo_id
 
     def get_rule_ids(self) -> str:
         """Get the IDs of reaction rule that
@@ -285,7 +285,7 @@ class rpReaction(Reaction, rpObject):
         return self.get_selenzy_infos().get(id, None)
 
     ## WRITE METHODS
-    def set_rp2_transfo_id(self, id: str) -> None:
+    def set_transfo_id(self, id: str) -> None:
         """Set the ID of chemical transformation that
         the current reaction has been generated from.
 
@@ -293,7 +293,7 @@ class rpReaction(Reaction, rpObject):
         ----------
         id: str
         """
-        self.__rp2_transfo_id = id
+        self.__transfo_id = id
 
     def set_rule_ids(self, ids: List[str]) -> None:
         """Set the IDs of reaction rule that

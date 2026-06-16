@@ -162,7 +162,7 @@ class Test_rpPathway(Main_rplibs):
                 "units": "kilojoule / mole",
             },
         }
-        self.rp2_transfo_id = "TRS_0_0_0"
+        self.transfo_id = "TRS_0_0_0"
         self.rule_ids = ["RR-02-a0cc0be463ff412f-16-F"]
         self.tmpl_rxn_ids = ["MNXR96458"]
         self.idx_in_path = 1
@@ -202,7 +202,7 @@ class Test_rpPathway(Main_rplibs):
         self.pathway = rpPathway(id=self.id)
         self.pathway.set_parameters(self.parameters)
         self.pathway.set_unit_defs(self.unit_def)
-        self.rxn.set_rp2_transfo_id(self.rp2_transfo_id)
+        self.rxn.set_transfo_id(self.transfo_id)
         self.rxn.set_rule_ids(self.rule_ids)
         self.rxn.set_tmpl_rxn_ids(self.tmpl_rxn_ids)
         self.rxn.set_idx_in_path(self.idx_in_path)
