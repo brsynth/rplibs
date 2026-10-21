@@ -4,8 +4,9 @@ Created on May 28 2021
 @author: Joan Hérisson
 """
 
-from unittest import TestCase
 from copy import deepcopy
+from unittest import TestCase
+
 from rplibs import rpReaction
 
 
@@ -122,7 +123,7 @@ class Test_rpReaction(TestCase):
         db = "bigg"
         xref = "bigg_ID"
         self.rxn.add_miriam(db, xref)
-        self.assertDictEqual(self.rxn.get_miriam(), {**self.miriam, **{db: xref}})
+        self.assertDictEqual(self.rxn.get_miriam(), {**self.miriam, db: xref})
 
     def test_build_miriam_is_dict(self):
         # infos["miriam"] as read from an rpSBML file is a flat list of

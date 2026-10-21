@@ -4,15 +4,16 @@ Created on May 28 2021
 @author: Joan Hérisson
 """
 
-from tempfile import NamedTemporaryFile
-from os import remove
 from copy import deepcopy
+from os import remove
+from tempfile import NamedTemporaryFile
+
+from main_rplibs import Main_rplibs
 
 # from xmldiff import main as xmldiff_main
 # from rr_cache import rrCache
-from rplibs import rpPathway, rpReaction, rpCompound
+from rplibs import rpCompound, rpPathway, rpReaction
 from rplibs.cobra_format import at_pattern
-from main_rplibs import Main_rplibs
 
 
 class Test_rpPathway(Main_rplibs):

@@ -4,8 +4,9 @@ Created on June 17 2020
 @author: Joan Hérisson
 """
 
-from rplibs import rpSBML, rpGraph
 from main_rplibs import Main_rplibs
+
+from rplibs import rpGraph, rpSBML
 
 
 class Test_rpGraph(Main_rplibs):

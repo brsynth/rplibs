@@ -1,14 +1,14 @@
-from typing import Dict, List
 from brs_utils import create_logger
+
 from rplibs import rpPathway
 from rplibs.Args import build_args_parser
 
 
-def counts(pathways: List[rpPathway]) -> Dict:
+def counts(pathways: list[rpPathway]) -> dict:
 
     # SPECIES
     species_l = [pathway.get_species_ids() for pathway in pathways]
-    species_l = sorted(list(set([y for x in species_l for y in x])))
+    species_l = sorted({y for x in species_l for y in x})
 
     # REACTIONS
     reactions_l = []
@@ -20,7 +20,7 @@ def counts(pathways: List[rpPathway]) -> Dict:
     return {"species": species_l, "reactions": [rxn.to_string() for rxn in reactions_l]}
 
 
-def print_stats(pathways: List[rpPathway], species: Dict, reactions: Dict) -> None:
+def print_stats(pathways: list[rpPathway], species: dict, reactions: dict) -> None:
 
     # PATHWAYS
     title = f"{len(pathways)} Pathway(s)"
