@@ -355,6 +355,55 @@ class Test_rpPathway(Main_rplibs):
             tempf.close()
             remove(tempf.name)
 
+    def test_read_miriam(self):
+        # rplibs/data/lycopene.sbml has both ec-code and uniprot (selenzy)
+        # MIRIAM annotations on its reactions; reading it back must expose
+        # them as a dict (not the raw list of identifiers.org URLs), with
+        # ec-code consistent with get_ec_numbers().
+        expected = {
+            "rxn_1": {
+                "ec-code": {"2.5.1.29", "2.5.1.82"},
+                "uniprot": {"P21683", "P21684"},
+            },
+            "rxn_2": {
+                "ec-code": {"2.5.1.32", "2.5.1.96", "2.5.1.99"},
+                "uniprot": {"P21683", "P21684"},
+            },
+            "rxn_3": {
+                "ec-code": {"1.3.99.31"},
+                "uniprot": {"P21683", "P21685", "P21687", "P21688"},
+            },
+        }
+        for rxn_id, exp_miriam in expected.items():
+            with self.subTest(rxn_id=rxn_id):
+                rxn = self.rpsbml_lycopene.get_reaction(rxn_id)
+                miriam = rxn.get_miriam()
+                self.assertIsInstance(miriam, dict)
+                self.assertSetEqual(set(miriam.keys()), set(exp_miriam.keys()))
+                for db, refs in exp_miriam.items():
+                    self.assertSetEqual(set(miriam[db]), refs)
+                self.assertSetEqual(set(rxn.get_ec_numbers()), exp_miriam["ec-code"])
+
+    def test_write_miriam(self):
+        # miriam entries (ec-code, and anything else such as uniprot) must
+        # survive a to_rpSBML() -> write -> read round-trip, not just the
+        # "ec-code" ones.
+        with NamedTemporaryFile(delete=False) as tempf:
+            self.rpsbml_lycopene.to_rpSBML().write_to_file(tempf.name)
+            reloaded = rpPathway(infile=tempf.name)
+            tempf.close()
+            remove(tempf.name)
+
+        for rxn in self.rpsbml_lycopene.get_list_of_reactions():
+            with self.subTest(rxn_id=rxn.get_id()):
+                reloaded_rxn = reloaded.get_reaction(rxn.get_id())
+                self.assertSetEqual(
+                    set(reloaded_rxn.get_miriam().keys()),
+                    set(rxn.get_miriam().keys()),
+                )
+                for db, refs in rxn.get_miriam().items():
+                    self.assertSetEqual(set(reloaded_rxn.get_miriam()[db]), set(refs))
+
     def test_rename_compound(self):
         for spe_id in ["CMPD_0000000003", "TARGET_0000000001"]:
             with self.subTest("Message for this subtest", spe_id=spe_id):
