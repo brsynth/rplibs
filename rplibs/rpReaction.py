@@ -27,6 +27,7 @@ from copy import deepcopy
 from logging import Logger, getLogger
 from chemlite import Reaction
 from rplibs.rpObject import rpObject
+from rplibs.rpSBML import rpSBML
 
 
 class rpReaction(Reaction, rpObject):
@@ -60,11 +61,11 @@ class rpReaction(Reaction, rpObject):
     def build(
         rxn_id: str, infos: Dict, logger: Logger = getLogger(__name__)
     ) -> Tuple["rpReaction", Union[str, None]]:
-        # Extract EC numbers from miriam
-        ec_numbers = []
-        for info in infos["miriam"]:
-            if "ec-code" in info:
-                ec_numbers.append(info.split("/")[-1])
+        # Convert the raw MIRIAM annotation (a list of identifiers.org URLs)
+        # into a dict keyed by database (e.g. {"ec-code": [...], "uniprot": [...]}),
+        # consistent with how miriam is typed/used everywhere else.
+        miriam = rpSBML.convert_miriam_to_dict(infos["miriam"])
+        ec_numbers = miriam.get("ec-code", [])
         reaction = rpReaction(
             id=rxn_id,
             ec_numbers=ec_numbers,
@@ -74,7 +75,7 @@ class rpReaction(Reaction, rpObject):
             upper_flux_bound=infos["fbc_upper_value"],
             flux_bound_units=infos["fbc_units"],
             reversible=infos["reversible"],
-            miriam=infos["miriam"],
+            miriam=miriam,
             logger=logger,
         )
         # Add additional infos

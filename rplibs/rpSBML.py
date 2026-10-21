@@ -3848,8 +3848,10 @@ class rpSBML:
         res_dict = {}
         for xref in miriam:
             try:
+                # db segment may contain dots/hyphens (e.g. 'ec-code', 'metanetx.reaction'),
+                # ref segment may contain dots/colons/hyphens too (e.g. EC numbers '1.2.3.-')
                 m = re.match(
-                    "^http(s)?://identifiers.org/(\w+\.?\w+)[:/](\w+:?\w*)", xref
+                    r"^http(s)?://identifiers.org/([\w.-]+)[:/]([\w.:-]+)", xref
                 ).groups()
                 db = m[1]
                 ref = m[2]

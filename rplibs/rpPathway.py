@@ -746,11 +746,20 @@ class rpPathway(Pathway, rpObject):
 
         ## Add reactions to the model
         for rxn in self.get_list_of_reactions():
-            xref = {"ec-code": rxn.get_ec_numbers(), "miriam": rxn.get_miriam()}
+            # Cross-references to write as MIRIAM annotations on the reaction.
+            # ec_numbers is kept as the authoritative source for "ec-code"
+            # (always populated, regardless of how the reaction was built),
+            # while any other miriam entry (e.g. "uniprot" from selenzy) is
+            # carried over too, so it survives a to_rpSBML() round-trip.
+            xref_dict = {
+                "ec-code": rxn.get_ec_numbers(),
+                **{k: v for k, v in rxn.get_miriam().items() if k != "ec-code"},
+            }
             xref = [
-                f"http://identifiers.org/ec-code/{ec}"
-                for ec in xref["ec-code"]
-                if ec != ""
+                f"http://identifiers.org/{db}/{ref}"
+                for db, refs in xref_dict.items()
+                for ref in refs
+                if ref != ""
             ]
             # Convert reactants and products compounds IDs into cache format for MetaNetX annotation
             self.get_logger().debug(

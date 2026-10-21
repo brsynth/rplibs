@@ -347,6 +347,24 @@ class Test_rpSBML(Main_rplibs):
         self.assertSetEqual(
             set(self.rpsbml_lycopene.get_isolated_species()), set(["MNXM24"])
         )
+
+    def test_convert_miriam_to_dict(self):
+        # db segment may contain a hyphen ('ec-code'), ref segment may
+        # contain dots ('1.2.3.-' is a valid, partially-specified EC number)
+        miriam = [
+            "http://identifiers.org/ec-code/1.2.3.4",
+            "http://identifiers.org/ec-code/1.2.3.-",
+            "http://identifiers.org/uniprot/P12345",
+            "https://identifiers.org/metanetx.reaction/MNXR1",
+        ]
+        self.assertDictEqual(
+            rpSBML.convert_miriam_to_dict(miriam),
+            {
+                "ec-code": ["1.2.3.4", "1.2.3.-"],
+                "uniprot": ["P12345"],
+                "metanetx.reaction": ["MNXR1"],
+            },
+        )
         self.rpsbml_lycopene.rm_isolated_species()
         self.assertListEqual(self.rpsbml_lycopene.get_isolated_species(), [])
 
