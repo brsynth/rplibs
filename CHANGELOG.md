@@ -1,8 +1,16 @@
 # Changelog
 
+## [6.9.7](https://github.com/brsynth/rplibs/tree/6.9.7) (2026-10-21)
+
+[Full Changelog](https://github.com/brsynth/rplibs/compare/6.9.6...6.9.7)
+
 ## [6.9.6](https://github.com/brsynth/rplibs/tree/6.9.6) (2026-06-16)
 
 [Full Changelog](https://github.com/brsynth/rplibs/compare/6.9.5...6.9.6)
+
+**Merged pull requests:**
+
+- chore!: 'rp2\_transfo\_id' -\> 'transfo\_id' [\#24](https://github.com/brsynth/rplibs/pull/24) ([breakthewall](https://github.com/breakthewall))
 
 ## [6.9.5](https://github.com/brsynth/rplibs/tree/6.9.5) (2026-06-02)
 
