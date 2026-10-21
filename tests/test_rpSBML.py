@@ -4,13 +4,15 @@ Created on June 17 2020
 @author: Joan Hérisson
 """
 
+from typing import ClassVar
+
+import cobra
 import libsbml
 import pandas as pd
-from rplibs import rpSBML
-from typing import Dict, List
-import cobra
 from cobra import io as cobra_io
 from main_rplibs import Main_rplibs
+
+from rplibs import rpSBML
 
 
 class Test_rpSBML(Main_rplibs):
@@ -30,7 +32,7 @@ class Test_rpSBML(Main_rplibs):
     # ref_score = 0.5684564101634014
 
     rpsbml_lycopene_name = "rp_002_0001"
-    rpsbml_lycopene_specie_id = [
+    rpsbml_lycopene_specie_id: ClassVar[list] = [
         "CMPD_0000000001",
         "MNXM24",
         "M_ppi_c",
@@ -179,8 +181,8 @@ class Test_rpSBML(Main_rplibs):
     def test_speciesMatchWith(self):
         # Return type.
         corr_spe, miss_spe = self.rpsbml_none.speciesMatchWith([], "")
-        self.assertIsInstance(corr_spe, Dict)
-        self.assertIsInstance(miss_spe, List)
+        self.assertIsInstance(corr_spe, dict)
+        self.assertIsInstance(miss_spe, list)
         # Basic
         self.assertEqual(
             sorted(self.rpsbml_lycopene_specie_id),
@@ -322,7 +324,7 @@ class Test_rpSBML(Main_rplibs):
             if x.getId() == species_id
         ]
         self.assertEqual(len(species), 2)
-        specie = [x for x in species if x.getName() == species_name][0]
+        specie = next(x for x in species if x.getName() == species_name)
         self.assertEqual(
             {}, self.rpsbml_lycopene.readBRSYNTHAnnotation(specie.getAnnotation())
         )
@@ -341,11 +343,29 @@ class Test_rpSBML(Main_rplibs):
     def test_isolated_species(self):
         self.assertSetEqual(
             set(self.rpsbml_lycopene.get_isolated_species()),
-            set(["MNXM24", "MNXM8975"]),
+            {"MNXM24", "MNXM8975"},
         )
         self.rpsbml_lycopene.set_isolated_species(["MNXM24"])
         self.assertSetEqual(
-            set(self.rpsbml_lycopene.get_isolated_species()), set(["MNXM24"])
+            set(self.rpsbml_lycopene.get_isolated_species()), {"MNXM24"}
+        )
+
+    def test_convert_miriam_to_dict(self):
+        # db segment may contain a hyphen ('ec-code'), ref segment may
+        # contain dots ('1.2.3.-' is a valid, partially-specified EC number)
+        miriam = [
+            "http://identifiers.org/ec-code/1.2.3.4",
+            "http://identifiers.org/ec-code/1.2.3.-",
+            "http://identifiers.org/uniprot/P12345",
+            "https://identifiers.org/metanetx.reaction/MNXR1",
+        ]
+        self.assertDictEqual(
+            rpSBML.convert_miriam_to_dict(miriam),
+            {
+                "ec-code": ["1.2.3.4", "1.2.3.-"],
+                "uniprot": ["P12345"],
+                "metanetx.reaction": ["MNXR1"],
+            },
         )
         self.rpsbml_lycopene.rm_isolated_species()
         self.assertListEqual(self.rpsbml_lycopene.get_isolated_species(), [])

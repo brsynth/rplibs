@@ -4,15 +4,17 @@ Created on July 22 2021
 @author: Joan Hérisson
 """
 
-from unittest import TestCase
 from copy import deepcopy
+from typing import ClassVar
+from unittest import TestCase
+
 from rplibs.rpObject import rpObject
 
 
 class Test_rpSBML(TestCase):
 
-    __fba = {"value": 1, "error": 0.1}
-    __thermo = {"value": 2, "error": 0.01}
+    __fba: ClassVar[dict] = {"value": 1, "error": 0.1}
+    __thermo: ClassVar[dict] = {"value": 2, "error": 0.01}
     __key = "test"
 
     def setUp(self):

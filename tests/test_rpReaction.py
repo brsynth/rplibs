@@ -4,8 +4,9 @@ Created on May 28 2021
 @author: Joan Hérisson
 """
 
-from unittest import TestCase
 from copy import deepcopy
+from unittest import TestCase
+
 from rplibs import rpReaction
 
 
@@ -122,4 +123,30 @@ class Test_rpReaction(TestCase):
         db = "bigg"
         xref = "bigg_ID"
         self.rxn.add_miriam(db, xref)
-        self.assertDictEqual(self.rxn.get_miriam(), {**self.miriam, **{db: xref}})
+        self.assertDictEqual(self.rxn.get_miriam(), {**self.miriam, db: xref})
+
+    def test_build_miriam_is_dict(self):
+        # infos["miriam"] as read from an rpSBML file is a flat list of
+        # identifiers.org URLs (see rpSBML.readMIRIAMAnnotation); build()
+        # must turn it into a dict, like direct construction does.
+        infos = {
+            "miriam": [
+                "http://identifiers.org/ec-code/4.1.1.63",
+                "http://identifiers.org/uniprot/P12345",
+                "http://identifiers.org/uniprot/P67890",
+            ],
+            "left": self.reactants,
+            "right": self.products,
+            "fbc_lower_value": -10000,
+            "fbc_upper_value": 10000,
+            "fbc_units": "mmol_per_gDW_per_hr",
+            "reversible": False,
+            "brsynth": {},
+        }
+        rxn = rpReaction.build(rxn_id="rxn_built", infos=infos)
+        self.assertIsInstance(rxn.get_miriam(), dict)
+        self.assertDictEqual(
+            rxn.get_miriam(),
+            {"ec-code": ["4.1.1.63"], "uniprot": ["P12345", "P67890"]},
+        )
+        self.assertListEqual(rxn.get_ec_numbers(), ["4.1.1.63"])

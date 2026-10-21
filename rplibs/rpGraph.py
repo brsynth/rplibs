@@ -1,7 +1,10 @@
+import logging
+from collections.abc import Callable
+
 import networkx as nx
 from networkx.readwrite import json_graph
-import logging
-from typing import List, Callable
+
+_default_logger = logging.getLogger(__name__)
 
 
 class rpGraph:
@@ -14,7 +17,7 @@ class rpGraph:
         pathway_id,
         central_species_group_id,
         sink_species_group_id,
-        logger=logging.getLogger(__name__),
+        logger=_default_logger,
     ):
         """Constructor of the class
 
@@ -160,10 +163,10 @@ class rpGraph:
         self,
         func_eq_0: Callable,
         func_gt_0: Callable,
-        species: List[str] = [],
+        species: list[str] | None = None,
         only_central: bool = False,
         only_rp_pathway: bool = True,
-    ) -> List[str]:
+    ) -> list[str]:
         """Private function that returns the single parent species that are consumed only
 
         :param only_central: Focus on the central species only
@@ -179,26 +182,30 @@ class rpGraph:
         for spe_id in species:
             # for node_name in self.G.nodes():
             node = self.G.nodes.get(spe_id)
-            if node["type"] == "species":
-                if node["rp_pathway"]:
-                    # NOTE: if central species then must also be rp_pathway species
-                    if (
-                        (only_central and node["rp_trunk_species"])
-                        or (only_rp_pathway and node["rp_pathway"])
-                        or (not only_central and not only_rp_pathway)
-                    ):
-                        self.logger.debug(spe_id)
-                        self.logger.debug(f"succ: {list(func_gt_0(spe_id))}")
-                        self.logger.debug(f"pred: {list(func_eq_0(spe_id))}")
-                        if (
-                            len(list(func_gt_0(spe_id))) > 0
-                            and len(list(func_eq_0(spe_id))) == 0
-                        ):
-                            _species.append(spe_id)
+            # NOTE: if central species then must also be rp_pathway species
+            if (
+                node["type"] == "species"
+                and node["rp_pathway"]
+                and (
+                    (only_central and node["rp_trunk_species"])
+                    or (only_rp_pathway and node["rp_pathway"])
+                    or (not only_central and not only_rp_pathway)
+                )
+            ):
+                self.logger.debug(spe_id)
+                self.logger.debug(f"succ: {list(func_gt_0(spe_id))}")
+                self.logger.debug(f"pred: {list(func_eq_0(spe_id))}")
+                if (
+                    len(list(func_gt_0(spe_id))) > 0
+                    and len(list(func_eq_0(spe_id))) == 0
+                ):
+                    _species.append(spe_id)
 
         return _species
 
-    def onlyConsumedSpecies(self, species=[], only_central=False, only_rp_pathway=True):
+    def onlyConsumedSpecies(
+        self, species=None, only_central=False, only_rp_pathway=True
+    ):
         """Private function that returns the single parent species that are consumed only
 
         :param only_central: Focus on the central species only
@@ -216,7 +223,9 @@ class rpGraph:
             func_gt_0=self.G.successors,
         )
 
-    def onlyProducedSpecies(self, species=[], only_central=False, only_rp_pathway=True):
+    def onlyProducedSpecies(
+        self, species=None, only_central=False, only_rp_pathway=True
+    ):
         """Private function that returns the single parent produced species
 
         :param only_central: Focus on the central species only
@@ -253,14 +262,13 @@ class rpGraph:
             all_res.append(current_reac_list)
             return all_res
         self.logger.debug("succ_node_list: " + str(succ_node_list))
-        if not succ_node_list == []:
+        if succ_node_list != []:
             # can be multiple reactions at a given step
             multi_reac = []
             for n_n in succ_node_list:
                 n = self.G.nodes.get(n_n)
-                if n["type"] == "reaction":
-                    if n_n not in flat_reac_list:
-                        multi_reac.append(n_n)
+                if n["type"] == "reaction" and n_n not in flat_reac_list:
+                    multi_reac.append(n_n)
             # remove the ones that already exist
             self.logger.debug("multi_reac: " + str(multi_reac))
             multi_reac = [x for x in multi_reac if x not in flat_reac_list]
@@ -271,16 +279,12 @@ class rpGraph:
             # loop through all the possibilities
             for n_n in succ_node_list:
                 n = self.G.nodes.get(n_n)
-                if n["type"] == "reaction":
-                    if n_n in multi_reac:
-                        self._recursiveReacSuccessors(
-                            n_n, current_reac_list, all_res, num_reactions
-                        )
-                elif n["type"] == "species":
-                    if n["rp_trunk_species"]:
-                        self._recursiveReacSuccessors(
-                            n_n, current_reac_list, all_res, num_reactions
-                        )
+                if (n["type"] == "reaction" and n_n in multi_reac) or (
+                    n["type"] == "species" and n["rp_trunk_species"]
+                ):
+                    self._recursiveReacSuccessors(
+                        n_n, current_reac_list, all_res, num_reactions
+                    )
         return all_res
 
     ##
@@ -306,9 +310,8 @@ class rpGraph:
             multi_reac = []
             for n_n in pred_node_list:
                 n = self.G.nodes.get(n_n)
-                if n["type"] == "reaction":
-                    if n_n not in flat_reac_list:
-                        multi_reac.append(n_n)
+                if n["type"] == "reaction" and n_n not in flat_reac_list:
+                    multi_reac.append(n_n)
             # remove the ones that already exist
             self.logger.debug("multi_reac: " + str(multi_reac))
             multi_reac = [x for x in multi_reac if x not in flat_reac_list]
@@ -319,16 +322,12 @@ class rpGraph:
             # loop through all the possibilities
             for n_n in pred_node_list:
                 n = self.G.nodes.get(n_n)
-                if n["type"] == "reaction":
-                    if n_n in multi_reac:
-                        self._recursiveReacPredecessors(
-                            n_n, current_reac_list, all_res, num_reactions
-                        )
-                elif n["type"] == "species":
-                    if n["rp_trunk_species"]:
-                        self._recursiveReacPredecessors(
-                            n_n, current_reac_list, all_res, num_reactions
-                        )
+                if (n["type"] == "reaction" and n_n in multi_reac) or (
+                    n["type"] == "species" and n["rp_trunk_species"]
+                ):
+                    self._recursiveReacPredecessors(
+                        n_n, current_reac_list, all_res, num_reactions
+                    )
         return all_res
 
     """
@@ -431,7 +430,7 @@ class rpGraph:
             else:
                 self.logger.warning("Predecessors no results")
         if succ_res and prod_res:
-            if not succ_res == prod_res:
+            if succ_res != prod_res:
                 self.logger.warning("Both produce results and are not the same")
                 self.logger.warning("succ_res: " + str(succ_res))
                 self.logger.warning("prod_res: " + str(prod_res))

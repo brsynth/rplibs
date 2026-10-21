@@ -22,10 +22,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from typing import Dict, TypeVar
 from logging import Logger, getLogger
+from typing import TypeVar
+
 from chemlite import Compound
+
 from rplibs.rpObject import rpObject
+
+_default_logger = getLogger(__name__)
 
 
 class rpCompound(Compound, rpObject):
@@ -45,7 +49,7 @@ class rpCompound(Compound, rpObject):
         formula: str = "",
         name: str = "",
         compartment_id: str = "c",
-        logger: Logger = getLogger(__name__),
+        logger: Logger = _default_logger,
     ):
         """Create a rpCompound object with default settings.
 
@@ -73,7 +77,7 @@ class rpCompound(Compound, rpObject):
         rpObject.__init__(self)
         self.set_compartment(compartment_id)
 
-    def _to_dict(self, full: bool = True) -> Dict:
+    def _to_dict(self, full: bool = True) -> dict:
         """Get attributes as a dictionary.
 
         Parameters
@@ -92,7 +96,7 @@ class rpCompound(Compound, rpObject):
         else:
             return {**self.__to_dict(), **rpObject._to_dict(self)}
 
-    def __to_dict(self) -> Dict:
+    def __to_dict(self) -> dict:
         """Returns a dictionary which contains attributes
         only from rpCompound class excluding inherited ones."""
         return {
@@ -185,7 +189,7 @@ class rpCompound(Compound, rpObject):
     def from_compound(
         compound: Compound,
         compartment_id: str = "c",
-        logger: Logger = getLogger(__name__),
+        logger: Logger = _default_logger,
     ) -> "rpCompound":
         """Create a rpCompound object from a Compound object
 

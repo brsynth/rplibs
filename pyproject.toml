@@ -1,0 +1,29 @@
+[tool.ruff.lint]
+# Explicit rule set matching what the lint CI actually found and we fixed,
+# so results stay reproducible regardless of which ruff version's own
+# (quite broad, and occasionally shifting) defaults happen to be installed.
+select = [
+    "B006", "B008",            # flake8-bugbear: mutable/function-call defaults
+    "BLE001",                  # flake8-blind-except
+    "C403", "C405", "C408",    # flake8-comprehensions
+    "EXE001", "EXE005",        # flake8-executable
+    "I001",                    # isort: unsorted import block
+    "N999",                    # pep8-naming: invalid module name
+    "PERF102",                 # perflint: iterate .values() instead of .items()
+    "PLR1722",                 # pylint refactor: sys.exit()
+    "RUF012", "RUF013", "RUF015", "RUF059",  # ruff-specific
+    "SIM102", "SIM103", "SIM114", "SIM118", "SIM201",  # flake8-simplify
+    "W605",                    # pycodestyle: invalid escape sequence
+]
+
+[tool.ruff.lint.per-file-ignores]
+# These module names are the package's public API (rplibs.rpSBML,
+# rplibs.rpPathway, ...); renaming them to satisfy pep8-naming would be a
+# breaking change for every downstream consumer (rpCompletion, rpFBA, ...).
+"rplibs/rpSBML.py" = ["N999"]
+"rplibs/rpPathway.py" = ["N999"]
+"rplibs/rpReaction.py" = ["N999"]
+"rplibs/rpCompound.py" = ["N999"]
+"rplibs/rpGraph.py" = ["N999"]
+"rplibs/rpObject.py" = ["N999"]
+"rplibs/inchikeyMIRIAM.py" = ["N999"]

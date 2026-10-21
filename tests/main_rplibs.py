@@ -1,5 +1,6 @@
-from unittest import TestCase
 from os import path as os_path
+from unittest import TestCase
+
 from brs_utils import (
     create_logger,
 )

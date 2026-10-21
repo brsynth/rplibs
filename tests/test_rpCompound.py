@@ -4,15 +4,18 @@ Created on July 22 2021
 @author: Joan Hérisson
 """
 
+from typing import ClassVar
 from unittest import TestCase
+
 from chemlite import Compound
+
 from rplibs.rpCompound import rpCompound
 
 
 class Test_rpCompound(TestCase):
 
     __id = "test"
-    __dict = {
+    __dict: ClassVar[dict] = {
         "id": __id,
         "name": "",
         "smiles": "",

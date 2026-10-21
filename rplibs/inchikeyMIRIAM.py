@@ -1,7 +1,9 @@
-from rr_cache import rrCache
-from rplibs import rpSBML
-from libsbml import writeSBMLToFile
 import logging
+
+from libsbml import writeSBMLToFile
+from rr_cache import rrCache
+
+from rplibs import rpSBML
 
 
 class inchikeyMIRIAM:
@@ -12,7 +14,7 @@ class inchikeyMIRIAM:
         if logger is None:
             # Create logger
             self.logger = logging.getLogger(__name__)
-            self.logger.setLevel(getattr(logging, "ERROR"))
+            self.logger.setLevel(logging.ERROR)
             self.logger.formatter = logging.Formatter(
                 "%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s"
             )

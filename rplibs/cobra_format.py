@@ -1,14 +1,14 @@
-from logging import Logger, getLogger
-from typing import Dict
 from copy import deepcopy
+from logging import Logger, getLogger
 
 at_pattern = "__64__"
 bigg_prefix = "M_"
 
+_default_logger = getLogger(__name__)
+
 
 def to_cobra(string: str) -> str:
-    if string.startswith(bigg_prefix):
-        string = string[len(bigg_prefix) :]
+    string = string.removeprefix(bigg_prefix)
     return string.replace(at_pattern, "@")
 
 
@@ -33,7 +33,7 @@ def uncobraize(string: str) -> str:
 
 
 def uncobraize_results(
-    results: Dict, cobra_suffix: str, logger: Logger = getLogger(__name__)
+    results: dict, cobra_suffix: str, logger: Logger = _default_logger
 ) -> None:
 
     res = {"species": {}, "reactions": {}, "pathway": {}, "ignored_species": []}

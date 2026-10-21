@@ -22,9 +22,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from typing import Dict, TypeVar
-from logging import Logger, getLogger
 from copy import deepcopy
+from logging import Logger, getLogger
+from typing import TypeVar
+
+_default_logger = getLogger(__name__)
 
 
 class rpObject:
@@ -54,7 +56,7 @@ class rpObject:
     def get_thermo_prefix() -> str:
         return rpObject.__thermo_prefix
 
-    def __init__(self, logger: Logger = getLogger(__name__)):
+    def __init__(self, logger: Logger = _default_logger):
         self.__set_fba({})
         self.__set_thermo({})
         """Create a rpObject object with default settings.
@@ -64,7 +66,7 @@ class rpObject:
         logger : Logger, optional
         """
 
-    def _to_dict(self) -> Dict:
+    def _to_dict(self) -> dict:
         """Get attributes as a dictionary.
         Implemented for compatibility with inherited classes."""
         fba_infos = {
@@ -193,7 +195,7 @@ class rpObject:
         """
         self.__thermo = deepcopy(thermo)
 
-    def set_thermo_infos(self, infos: Dict[str, TypeVar]) -> None:
+    def set_thermo_infos(self, infos: dict[str, TypeVar]) -> None:
         """Set the thermodynamics infos.
 
         Parameters
@@ -229,7 +231,7 @@ class rpObject:
         """
         self.__fba = deepcopy(fba)
 
-    def set_fba_infos(self, infos: Dict[str, TypeVar]) -> None:
+    def set_fba_infos(self, infos: dict[str, TypeVar]) -> None:
         """Set the FBA infos.
 
         Parameters
